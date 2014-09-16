@@ -129,8 +129,8 @@ package generator
 import (
     "strings"
 
-    "dropbox/gogoprotobuf/gogoproto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
+    "github.com/dropbox/goprotoc/gogoproto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
 )
 
 const expResizeThreshold string = "1000000"

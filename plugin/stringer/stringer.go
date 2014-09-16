@@ -121,7 +121,6 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
 
     p.localName = generator.FileName(file)
 
-    fmtPkg := p.NewImport("fmt")
     stringsPkg := p.NewImport("strings")
     for _, message := range file.Messages() {
         if !gogoproto.IsStringer(file.FileDescriptorProto, message.DescriptorProto) {
@@ -145,7 +144,7 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
                 msgnames := strings.Split(msgname, ".")
                 typeName := msgnames[len(msgnames)-1]
                 if field.IsRepeated() {
-                    p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, fmtPkg.Use(),
+                    p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, p.Pkg["fmt"],
                         `.Sprintf("%v", this.`, fieldname, `[:this.`, generator.SizerName(fieldname),
                         `]), "`, typeName, `","`, msgname, `"`, ", 1) + `,", "`,")
                 } else {
@@ -153,19 +152,19 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
                     if gogoproto.IsCustomType(field) || gogoproto.IsEmbed(field) {
                         fieldValue = "this." + fieldname
                     }
-                    p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, fmtPkg.Use(),
+                    p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, p.Pkg["fmt"],
                         `.Sprintf("%v", `, fieldValue, `), "`, typeName, `","`, msgname, `"`,
                         ", 1) + `,", "`,")
                 }
             } else if field.IsRepeated() {
-                p.P("`", fieldname, ":`", ` + `, fmtPkg.Use(), `.Sprintf("%v", this.`, fieldname,
+                p.P("`", fieldname, ":`", ` + `, p.Pkg["fmt"], `.Sprintf("%v", this.`, fieldname,
                     "[:this.", generator.SizerName(fieldname), "]) + `,", "`,")
             } else {
                 fieldValue := "this.Get" + generator.CamelCase(fieldname) + "()"
                 if gogoproto.IsCustomType(field) || gogoproto.IsEmbed(field) {
                     fieldValue = "this." + fieldname
                 }
-                p.P("`", fieldname, ":`", ` + `, fmtPkg.Use(), `.Sprintf("%v", `, fieldValue, ") + `,", "`,")
+                p.P("`", fieldname, ":`", ` + `, p.Pkg["fmt"], `.Sprintf("%v", `, fieldValue, ") + `,", "`,")
             }
         }
         if message.DescriptorProto.HasExtension() {
@@ -175,7 +174,7 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
                 p.P("`XXX_extensions:` + proto.StringFromExtensionsBytes(this.XXX_extensions) + `,`,")
             }
         }
-        p.P("`XXX_unrecognized:` + ", fmtPkg.Use(), `.Sprintf("%v", this.XXX_unrecognized) + `, "`,`,")
+        p.P("`XXX_unrecognized:` + ", p.Pkg["fmt"], `.Sprintf("%v", this.XXX_unrecognized) + `, "`,`,")
         p.P("`}`,")
         p.P(`}`, `,""`, ")")
         p.P(`return s`)
