@@ -1,3 +1,3 @@
 package config
 
-const ProtoPath string = ".:/srv/go-server/src"
+const ProtoPath string = ".:/srv/github/src"

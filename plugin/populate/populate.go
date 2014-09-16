@@ -47,7 +47,7 @@ The following message:
 
   message B {
 	optional A A = 1 [(gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "dropbox/gogoprotobuf/test/custom.Uint128"];
+	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
   }
 
 given to the populate plugin, will generate code the following code:
@@ -82,9 +82,9 @@ These have caused problems with JSON marshalling and unmarshalling tests.
 package populate
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
     "fmt"
     "math"
     "strconv"
@@ -365,7 +365,7 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
     p.varGen = NewVarGen()
 
     p.localName = generator.FileName(file)
-    protoPkg := p.NewImport("dropbox/gogoprotobuf/proto")
+    protoPkg := p.NewImport("github.com/dropbox/goprotoc/proto")
 
     for _, message := range file.Messages() {
         if !gogoproto.HasPopulate(file.FileDescriptorProto, message.DescriptorProto) {

@@ -26,7 +26,7 @@
 
 package gogoproto;
 
-import "dropbox/gogoprotobuf/protobuf/google/protobuf/descriptor.proto";
+import "github.com/dropbox/goprotoc/protobuf/google/protobuf/descriptor.proto";
 
 extend google.protobuf.EnumOptions {
 	optional bool goproto_enum_prefix = 62001;

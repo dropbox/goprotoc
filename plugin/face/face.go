@@ -61,7 +61,7 @@ The following message:
 	option (gogoproto.goproto_getters) = false;
 	optional string Description = 1;
 	optional int64 Number = 2;
-	optional bytes Id = 3 [(gogoproto.customtype) = "dropbox/gogoprotobuf/test/custom.Uuid"];
+	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uuid"];
   }
 
 given to the face plugin, will generate the following code:
@@ -106,8 +106,8 @@ just the like TestProto method which is used to test the NewAFromFace function.
 package face
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type plugin struct {
@@ -129,7 +129,7 @@ func (p *plugin) Init(g *generator.Generator) {
 
 func (p *plugin) Generate(file *generator.FileDescriptor) {
     p.PluginImports = generator.NewPluginImports(p.Generator)
-    protoPkg := p.NewImport("dropbox/gogoprotobuf/proto")
+    protoPkg := p.NewImport("github.com/dropbox/goprotoc/proto")
     for _, message := range file.Messages() {
         if !gogoproto.IsFace(file.FileDescriptorProto, message.DescriptorProto) {
             continue

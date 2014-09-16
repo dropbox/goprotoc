@@ -53,7 +53,7 @@ The following message:
 message B {
 	option (gogoproto.description) = true;
 	optional A A = 1 [(gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "dropbox/gogoprotobuf/test/custom.Uint128"];
+	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
 }
 
 the marshalto code will generate the following code:
@@ -113,9 +113,9 @@ The generated tests and benchmarks will keep you safe and show that this is real
 package generator
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/proto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/proto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
     "fmt"
     "strconv"
     "strings"

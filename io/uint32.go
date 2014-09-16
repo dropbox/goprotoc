@@ -29,7 +29,7 @@
 package io
 
 import (
-    "dropbox/gogoprotobuf/proto"
+    "github.com/dropbox/goprotoc/proto"
     "encoding/binary"
     "io"
 )

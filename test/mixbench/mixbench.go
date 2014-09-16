@@ -33,7 +33,7 @@ import (
     "os/exec"
     "strings"
 
-    "dropbox/gogoprotobuf/test_config"
+    "github.com/dropbox/goprotoc/test_config"
 )
 
 type MixMatch struct {

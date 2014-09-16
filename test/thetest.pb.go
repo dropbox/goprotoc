@@ -65,36 +65,36 @@
 */
 package test
 
-import proto "dropbox/gogoprotobuf/proto"
+import proto "github.com/dropbox/goprotoc/proto"
 import math "math"
 
-// discarding unused import gogoproto "dropbox/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "github.com/dropbox/goprotoc/gogoproto/gogo.pb"
 
-import dropbox_gogoprotobuf_test_custom "dropbox/gogoprotobuf/test/custom"
+import dropbox_gogoprotobuf_test_custom "github.com/dropbox/goprotoc/test/custom"
 
 import fmt1 "fmt"
 import strings "strings"
 import reflect "reflect"
 
-import dropbox_gogoprotobuf_proto3 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto3 "github.com/dropbox/goprotoc/proto"
 
-import dropbox_gogoprotobuf_proto4 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto4 "github.com/dropbox/goprotoc/proto"
 
 import fmt2 "fmt"
 import strings1 "strings"
-import dropbox_gogoprotobuf_proto5 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto5 "github.com/dropbox/goprotoc/proto"
 import sort "sort"
 import strconv "strconv"
 import reflect1 "reflect"
 
-import dropbox_gogoprotobuf_proto6 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto6 "github.com/dropbox/goprotoc/proto"
 
 import fmt3 "fmt"
 import bytes "bytes"
 
 import strconv1 "strconv"
 
-import google_protobuf "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
+import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -435,7 +435,7 @@ func (*NinNestedStruct) ProtoMessage() {}
 
 type NidOptCustom struct {
     Id               Uuid                                     `protobuf:"bytes,1,opt,customtype=Uuid" json:"Id"`
-    Value            dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,opt,customtype=dropbox/gogoprotobuf/test/custom.Uint128" json:"Value"`
+    Value            dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,opt,customtype=github.com/dropbox/goprotoc/test/custom.Uint128" json:"Value"`
     XXX_unrecognized []byte                                   `json:"-"`
 }
 
@@ -444,7 +444,7 @@ func (*NidOptCustom) ProtoMessage() {}
 
 type NinOptCustom struct {
     Id               *Uuid                                     `protobuf:"bytes,1,opt,customtype=Uuid" json:"Id,omitempty"`
-    Value            *dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,opt,customtype=dropbox/gogoprotobuf/test/custom.Uint128" json:"Value,omitempty"`
+    Value            *dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,opt,customtype=github.com/dropbox/goprotoc/test/custom.Uint128" json:"Value,omitempty"`
     XXX_unrecognized []byte                                    `json:"-"`
 }
 
@@ -453,7 +453,7 @@ func (*NinOptCustom) ProtoMessage() {}
 
 type NidRepCustom struct {
     Id               []Uuid                                     `protobuf:"bytes,1,rep,customtype=Uuid" json:"Id"`
-    Value            []dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,rep,customtype=dropbox/gogoprotobuf/test/custom.Uint128" json:"Value"`
+    Value            []dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,rep,customtype=github.com/dropbox/goprotoc/test/custom.Uint128" json:"Value"`
     XXX_unrecognized []byte                                     `json:"-"`
 }
 
@@ -462,7 +462,7 @@ func (*NidRepCustom) ProtoMessage() {}
 
 type NinRepCustom struct {
     Id               []Uuid                                     `protobuf:"bytes,1,rep,customtype=Uuid" json:"Id,omitempty"`
-    Value            []dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,rep,customtype=dropbox/gogoprotobuf/test/custom.Uint128" json:"Value,omitempty"`
+    Value            []dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,2,rep,customtype=github.com/dropbox/goprotoc/test/custom.Uint128" json:"Value,omitempty"`
     XXX_unrecognized []byte                                     `json:"-"`
 }
 
@@ -1008,9 +1008,9 @@ func (*CustomNameNinStruct) ProtoMessage() {}
 
 type CustomNameCustomType struct {
     FieldA           *Uuid                                      `protobuf:"bytes,1,opt,customtype=Uuid" json:"Id,omitempty"`
-    FieldB           *dropbox_gogoprotobuf_test_custom.Uint128  `protobuf:"bytes,2,opt,customtype=dropbox/gogoprotobuf/test/custom.Uint128" json:"Value,omitempty"`
+    FieldB           *dropbox_gogoprotobuf_test_custom.Uint128  `protobuf:"bytes,2,opt,customtype=github.com/dropbox/goprotoc/test/custom.Uint128" json:"Value,omitempty"`
     FieldC           []Uuid                                     `protobuf:"bytes,3,rep,customtype=Uuid" json:"Ids,omitempty"`
-    FieldD           []dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,4,rep,customtype=dropbox/gogoprotobuf/test/custom.Uint128" json:"Values,omitempty"`
+    FieldD           []dropbox_gogoprotobuf_test_custom.Uint128 `protobuf:"bytes,4,rep,customtype=github.com/dropbox/goprotoc/test/custom.Uint128" json:"Values,omitempty"`
     XXX_unrecognized []byte                                     `json:"-"`
 }
 
@@ -15526,7 +15526,7 @@ func (this *NoExtensionsMap) Description() (desc *google_protobuf.FileDescriptor
     return ThetestDescription()
 }
 func ThetestDescription() (desc *google_protobuf.FileDescriptorSet) {
-    return &google_protobuf.FileDescriptorSet{File: []*google_protobuf.FileDescriptorProto{&google_protobuf.FileDescriptorProto{Name: func(v string) *string { return &v }("dropbox/gogoprotobuf/protobuf/google/protobuf/descriptor.proto"), Package: func(v string) *string { return &v }("google.protobuf"), Dependency: []string(nil), PublicDependency: []int32(nil), WeakDependency: []int32(nil), MessageType: []*google_protobuf.DescriptorProto{&google_protobuf.DescriptorProto{Name: func(v string) *string { return &v }("FileDescriptorSet"), Field: []*google_protobuf.FieldDescriptorProto{&google_protobuf.FieldDescriptorProto{Name: func(v string) *string { return &v }("file"), Number: func(v int32) *int32 { return &v }(1), Label: func(v google_protobuf.FieldDescriptorProto_Label) *google_protobuf.FieldDescriptorProto_Label {
+    return &google_protobuf.FileDescriptorSet{File: []*google_protobuf.FileDescriptorProto{&google_protobuf.FileDescriptorProto{Name: func(v string) *string { return &v }("github.com/dropbox/goprotoc/protobuf/google/protobuf/descriptor.proto"), Package: func(v string) *string { return &v }("google.protobuf"), Dependency: []string(nil), PublicDependency: []int32(nil), WeakDependency: []int32(nil), MessageType: []*google_protobuf.DescriptorProto{&google_protobuf.DescriptorProto{Name: func(v string) *string { return &v }("FileDescriptorSet"), Field: []*google_protobuf.FieldDescriptorProto{&google_protobuf.FieldDescriptorProto{Name: func(v string) *string { return &v }("file"), Number: func(v int32) *int32 { return &v }(1), Label: func(v google_protobuf.FieldDescriptorProto_Label) *google_protobuf.FieldDescriptorProto_Label {
         return &v
     }(3), Type: func(v google_protobuf.FieldDescriptorProto_Type) *google_protobuf.FieldDescriptorProto_Type {
         return &v
@@ -15854,7 +15854,7 @@ func ThetestDescription() (desc *google_protobuf.FileDescriptorSet) {
         return &v
     }(1), Type: func(v google_protobuf.FieldDescriptorProto_Type) *google_protobuf.FieldDescriptorProto_Type {
         return &v
-    }(9), TypeName: nil, Extendee: nil, DefaultValue: nil, Options: nil, XXX_unrecognized: []byte{}}}, Extension: []*google_protobuf.FieldDescriptorProto(nil), NestedType: []*google_protobuf.DescriptorProto(nil), EnumType: []*google_protobuf.EnumDescriptorProto(nil), ExtensionRange: []*google_protobuf.DescriptorProto_ExtensionRange(nil), Options: nil, XXX_unrecognized: []byte{}}}, EnumType: []*google_protobuf.EnumDescriptorProto(nil), ExtensionRange: []*google_protobuf.DescriptorProto_ExtensionRange(nil), Options: nil, XXX_unrecognized: []byte{}}}, EnumType: []*google_protobuf.EnumDescriptorProto(nil), Service: []*google_protobuf.ServiceDescriptorProto(nil), Extension: []*google_protobuf.FieldDescriptorProto(nil), Options: &google_protobuf.FileOptions{JavaPackage: func(v string) *string { return &v }("com.google.protobuf"), JavaOuterClassname: func(v string) *string { return &v }("DescriptorProtos"), JavaMultipleFiles: nil, JavaGenerateEqualsAndHash: nil, OptimizeFor: func(v google_protobuf.FileOptions_OptimizeMode) *google_protobuf.FileOptions_OptimizeMode { return &v }(1), GoPackage: nil, CcGenericServices: nil, JavaGenericServices: nil, PyGenericServices: nil, UninterpretedOption: []*google_protobuf.UninterpretedOption(nil), XXX_extensions: map[int32]proto.Extension{}, XXX_unrecognized: []byte{}}, SourceCodeInfo: nil, XXX_unrecognized: []byte{}}, &google_protobuf.FileDescriptorProto{Name: func(v string) *string { return &v }("dropbox/gogoprotobuf/gogoproto/gogo.proto"), Package: func(v string) *string { return &v }("gogoproto"), Dependency: []string{"dropbox/gogoprotobuf/protobuf/google/protobuf/descriptor.proto"}, PublicDependency: []int32(nil), WeakDependency: []int32(nil), MessageType: []*google_protobuf.DescriptorProto(nil), EnumType: []*google_protobuf.EnumDescriptorProto(nil), Service: []*google_protobuf.ServiceDescriptorProto(nil), Extension: []*google_protobuf.FieldDescriptorProto{&google_protobuf.FieldDescriptorProto{Name: func(v string) *string { return &v }("goproto_enum_prefix"), Number: func(v int32) *int32 { return &v }(62001), Label: func(v google_protobuf.FieldDescriptorProto_Label) *google_protobuf.FieldDescriptorProto_Label {
+    }(9), TypeName: nil, Extendee: nil, DefaultValue: nil, Options: nil, XXX_unrecognized: []byte{}}}, Extension: []*google_protobuf.FieldDescriptorProto(nil), NestedType: []*google_protobuf.DescriptorProto(nil), EnumType: []*google_protobuf.EnumDescriptorProto(nil), ExtensionRange: []*google_protobuf.DescriptorProto_ExtensionRange(nil), Options: nil, XXX_unrecognized: []byte{}}}, EnumType: []*google_protobuf.EnumDescriptorProto(nil), ExtensionRange: []*google_protobuf.DescriptorProto_ExtensionRange(nil), Options: nil, XXX_unrecognized: []byte{}}}, EnumType: []*google_protobuf.EnumDescriptorProto(nil), Service: []*google_protobuf.ServiceDescriptorProto(nil), Extension: []*google_protobuf.FieldDescriptorProto(nil), Options: &google_protobuf.FileOptions{JavaPackage: func(v string) *string { return &v }("com.google.protobuf"), JavaOuterClassname: func(v string) *string { return &v }("DescriptorProtos"), JavaMultipleFiles: nil, JavaGenerateEqualsAndHash: nil, OptimizeFor: func(v google_protobuf.FileOptions_OptimizeMode) *google_protobuf.FileOptions_OptimizeMode { return &v }(1), GoPackage: nil, CcGenericServices: nil, JavaGenericServices: nil, PyGenericServices: nil, UninterpretedOption: []*google_protobuf.UninterpretedOption(nil), XXX_extensions: map[int32]proto.Extension{}, XXX_unrecognized: []byte{}}, SourceCodeInfo: nil, XXX_unrecognized: []byte{}}, &google_protobuf.FileDescriptorProto{Name: func(v string) *string { return &v }("github.com/dropbox/goprotoc/gogoproto/gogo.proto"), Package: func(v string) *string { return &v }("gogoproto"), Dependency: []string{"github.com/dropbox/goprotoc/protobuf/google/protobuf/descriptor.proto"}, PublicDependency: []int32(nil), WeakDependency: []int32(nil), MessageType: []*google_protobuf.DescriptorProto(nil), EnumType: []*google_protobuf.EnumDescriptorProto(nil), Service: []*google_protobuf.ServiceDescriptorProto(nil), Extension: []*google_protobuf.FieldDescriptorProto{&google_protobuf.FieldDescriptorProto{Name: func(v string) *string { return &v }("goproto_enum_prefix"), Number: func(v int32) *int32 { return &v }(62001), Label: func(v google_protobuf.FieldDescriptorProto_Label) *google_protobuf.FieldDescriptorProto_Label {
         return &v
     }(1), Type: func(v google_protobuf.FieldDescriptorProto_Type) *google_protobuf.FieldDescriptorProto_Type {
         return &v
@@ -16054,7 +16054,7 @@ func ThetestDescription() (desc *google_protobuf.FileDescriptorSet) {
         return &v
     }(1), Type: func(v google_protobuf.FieldDescriptorProto_Type) *google_protobuf.FieldDescriptorProto_Type {
         return &v
-    }(9), TypeName: nil, Extendee: func(v string) *string { return &v }(".google.protobuf.FieldOptions"), DefaultValue: nil, Options: nil, XXX_unrecognized: []byte{}}}, Options: nil, SourceCodeInfo: nil, XXX_unrecognized: []byte{}}, &google_protobuf.FileDescriptorProto{Name: func(v string) *string { return &v }("thetest.proto"), Package: func(v string) *string { return &v }("test"), Dependency: []string{"dropbox/gogoprotobuf/gogoproto/gogo.proto"}, PublicDependency: []int32(nil), WeakDependency: []int32(nil), MessageType: []*google_protobuf.DescriptorProto{&google_protobuf.DescriptorProto{Name: func(v string) *string { return &v }("NidOptNative"), Field: []*google_protobuf.FieldDescriptorProto{&google_protobuf.FieldDescriptorProto{Name: func(v string) *string { return &v }("Field1"), Number: func(v int32) *int32 { return &v }(1), Label: func(v google_protobuf.FieldDescriptorProto_Label) *google_protobuf.FieldDescriptorProto_Label {
+    }(9), TypeName: nil, Extendee: func(v string) *string { return &v }(".google.protobuf.FieldOptions"), DefaultValue: nil, Options: nil, XXX_unrecognized: []byte{}}}, Options: nil, SourceCodeInfo: nil, XXX_unrecognized: []byte{}}, &google_protobuf.FileDescriptorProto{Name: func(v string) *string { return &v }("thetest.proto"), Package: func(v string) *string { return &v }("test"), Dependency: []string{"github.com/dropbox/goprotoc/gogoproto/gogo.proto"}, PublicDependency: []int32(nil), WeakDependency: []int32(nil), MessageType: []*google_protobuf.DescriptorProto{&google_protobuf.DescriptorProto{Name: func(v string) *string { return &v }("NidOptNative"), Field: []*google_protobuf.FieldDescriptorProto{&google_protobuf.FieldDescriptorProto{Name: func(v string) *string { return &v }("Field1"), Number: func(v int32) *int32 { return &v }(1), Label: func(v google_protobuf.FieldDescriptorProto_Label) *google_protobuf.FieldDescriptorProto_Label {
         return &v
     }(1), Type: func(v google_protobuf.FieldDescriptorProto_Type) *google_protobuf.FieldDescriptorProto_Type {
         return &v

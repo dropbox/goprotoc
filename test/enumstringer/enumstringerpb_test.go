@@ -19,7 +19,7 @@ package enumstringer
 import testing "testing"
 import math_rand "math/rand"
 import time "time"
-import dropbox_gogoprotobuf_proto "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto "github.com/dropbox/goprotoc/proto"
 import testing1 "testing"
 import math_rand1 "math/rand"
 import time1 "time"
@@ -27,11 +27,11 @@ import encoding_json "encoding/json"
 import testing2 "testing"
 import math_rand2 "math/rand"
 import time2 "time"
-import dropbox_gogoprotobuf_proto1 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto1 "github.com/dropbox/goprotoc/proto"
 import math_rand3 "math/rand"
 import time3 "time"
 import testing3 "testing"
-import dropbox_gogoprotobuf_proto2 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto2 "github.com/dropbox/goprotoc/proto"
 
 func TestNidOptEnumProto(t *testing.T) {
     popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))

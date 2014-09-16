@@ -32,7 +32,7 @@ import (
     "strings"
     "testing"
 
-    "dropbox/gogoprotobuf/test_config"
+    "github.com/dropbox/goprotoc/test_config"
 )
 
 func TestEmbedConflict(t *testing.T) {

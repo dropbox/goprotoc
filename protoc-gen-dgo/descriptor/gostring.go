@@ -30,7 +30,7 @@ package google_protobuf
 
 import fmt "fmt"
 import strings "strings"
-import dropbox_gogoprotobuf_proto "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto "github.com/dropbox/goprotoc/proto"
 import sort "sort"
 import strconv "strconv"
 import reflect "reflect"

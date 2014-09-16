@@ -26,7 +26,7 @@
 
 package packed;
 
-import "dropbox/gogoprotobuf/gogoproto/gogo.proto";
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 
 option (gogoproto.populate_all) = true;
 

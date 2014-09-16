@@ -14,11 +14,11 @@ It has these top-level messages:
 */
 package google_protobuf_compiler
 
-import proto "dropbox/gogoprotobuf/proto"
+import proto "github.com/dropbox/goprotoc/proto"
 import math "math"
 
 // renamed import google/protobuf/descriptor to code.google.com/p/gogoprotobuf/protoc-gen-dgo/descriptor
-import google_protobuf "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
+import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal

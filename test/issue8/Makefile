@@ -26,7 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-include /srv/go-server/src/dropbox/gogoprotobuf/test_config/config
+include /srv/github/src/github.com/dropbox/goprotoc/test_config/config
 
 regenerate:
 	(protoc --proto_path=$(PROTO_PATH) --dgo_out=. proto.proto)

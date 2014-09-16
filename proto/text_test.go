@@ -39,7 +39,7 @@ import (
     "strings"
     "testing"
 
-    "dropbox/gogoprotobuf/proto"
+    "github.com/dropbox/goprotoc/proto"
 
     pb "./testdata"
 )

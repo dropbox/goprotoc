@@ -27,7 +27,7 @@
 package test
 
 import (
-    "dropbox/gogoprotobuf/proto"
+    "github.com/dropbox/goprotoc/proto"
     "math"
     math_rand "math/rand"
     "testing"

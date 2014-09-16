@@ -55,10 +55,10 @@ import (
     "unicode"
     "unicode/utf8"
 
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/proto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
-    plugin "dropbox/gogoprotobuf/protoc-gen-dgo/plugin"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/proto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+    plugin "github.com/dropbox/goprotoc/protoc-gen-dgo/plugin"
 )
 
 // A Plugin provides functionality to add to the output during Go code generation,
@@ -1134,7 +1134,7 @@ func (g *Generator) generateImports() {
     // reference it later. The same argument applies to the math package,
     // for handling bit patterns for floating-point numbers.
     c := make(map[string]bool)
-    g.P("import " + g.Pkg["proto"] + " " + strconv.Quote(g.ImportPrefix+"dropbox/gogoprotobuf/proto"))
+    g.P("import " + g.Pkg["proto"] + " " + strconv.Quote(g.ImportPrefix+"github.com/dropbox/goprotoc/proto"))
     g.P("import " + g.Pkg["fmt"] + ` "fmt"`)
     g.P("import " + g.Pkg["io"] + ` "io"`)
     g.P("import " + g.Pkg["math"] + ` "math"`)
@@ -1165,8 +1165,8 @@ func (g *Generator) generateImports() {
                 if dir == "google/protobuf" && strings.HasSuffix(filename, "descriptor.pb") {
                     // This allows protos to import a single google/protobuf/descriptor.proto so as not to cause conflicts with C++ or other code generators.
                     // Also this allows the go generated descriptor to live inside the gogoprotobuf package
-                    dir = "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
-                    g.P("// renamed import google/protobuf/descriptor to dropbox/gogoprotobuf/protoc-gen-dgo/descriptor")
+                    dir = "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+                    g.P("// renamed import google/protobuf/descriptor to github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor")
                 }
                 g.P("import ", fd.PackageName(), " ", strconv.Quote(dir))
                 c[dir] = true

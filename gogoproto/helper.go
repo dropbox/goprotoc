@@ -26,8 +26,8 @@
 
 package gogoproto
 
-import google_protobuf "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
-import proto "dropbox/gogoprotobuf/proto"
+import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+import proto "github.com/dropbox/goprotoc/proto"
 
 func IsEmbed(field *google_protobuf.FieldDescriptorProto) bool {
     return proto.GetBoolExtension(field.Options, E_Embed, false)

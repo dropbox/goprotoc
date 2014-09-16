@@ -55,7 +55,7 @@ The following message:
   message B {
 	option (gogoproto.description) = true;
 	optional A A = 1 [(gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "dropbox/gogoprotobuf/test/custom.Uint128"];
+	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
   }
 
 the unmarshal will generate the following code:
@@ -158,9 +158,9 @@ If you call m.Unmarshal without m.Reset you could be merging protocol buffers.
 package generator
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/proto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/proto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
     "fmt"
     "strconv"
     "strings"

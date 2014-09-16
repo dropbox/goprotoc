@@ -16,20 +16,20 @@
 */
 package packed
 
-import proto "dropbox/gogoprotobuf/proto"
+import proto "github.com/dropbox/goprotoc/proto"
 import math "math"
 
-// discarding unused import gogoproto "dropbox/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "github.com/dropbox/goprotoc/gogoproto/gogo.pb"
 
 import io "io"
 import math1 "math"
 import fmt "fmt"
-import dropbox_gogoprotobuf_proto "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto "github.com/dropbox/goprotoc/proto"
 
 import io1 "io"
 import unsafe "unsafe"
 import fmt1 "fmt"
-import dropbox_gogoprotobuf_proto1 "dropbox/gogoprotobuf/proto"
+import dropbox_gogoprotobuf_proto1 "github.com/dropbox/goprotoc/proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal

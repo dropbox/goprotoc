@@ -38,8 +38,8 @@ This package is subject to change.
 package enumstringer
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type enumstringer struct {

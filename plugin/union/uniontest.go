@@ -27,9 +27,9 @@
 package union
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/plugin/testgen"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/plugin/testgen"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {

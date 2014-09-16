@@ -34,7 +34,7 @@ package proto_test
 import (
     "testing"
 
-    "dropbox/gogoprotobuf/proto"
+    "github.com/dropbox/goprotoc/proto"
 
     pb "./testdata"
 )

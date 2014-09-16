@@ -27,9 +27,9 @@
 package size
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/plugin/testgen"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/plugin/testgen"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {
@@ -45,7 +45,7 @@ func (p *test) Generate(imports generator.PluginImports, file *generator.FileDes
     randPkg := imports.NewImport("math/rand")
     timePkg := imports.NewImport("time")
     testingPkg := imports.NewImport("testing")
-    protoPkg := imports.NewImport("dropbox/gogoprotobuf/proto")
+    protoPkg := imports.NewImport("github.com/dropbox/goprotoc/proto")
     for _, message := range file.Messages() {
         ccTypeName := generator.CamelCaseSlice(message.TypeName())
         if !gogoproto.IsSizer(file.FileDescriptorProto, message.DescriptorProto) {

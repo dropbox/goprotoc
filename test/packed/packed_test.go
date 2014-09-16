@@ -28,7 +28,7 @@ package packed
 
 import (
     "bytes"
-    "dropbox/gogoprotobuf/proto"
+    "github.com/dropbox/goprotoc/proto"
     "fmt"
     math_rand "math/rand"
     "testing"

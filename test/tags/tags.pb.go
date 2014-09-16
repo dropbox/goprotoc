@@ -14,10 +14,10 @@ It has these top-level messages:
 */
 package tags
 
-import proto "dropbox/gogoprotobuf/proto"
+import proto "github.com/dropbox/goprotoc/proto"
 import math "math"
 
-// discarding unused import gogoproto "dropbox/gogoprotobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "github.com/dropbox/goprotoc/gogoproto/gogo.pb"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal

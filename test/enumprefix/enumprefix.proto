@@ -26,8 +26,8 @@
 
 package enumprefix;
 
-import "dropbox/gogoprotobuf/test/thetest.proto";
-import "dropbox/gogoprotobuf/gogoproto/gogo.proto";
+import "github.com/dropbox/goprotoc/test/thetest.proto";
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 
 message MyMessage {
 	optional test.TheTestEnum TheField = 1 [(gogoproto.nullable) = false];

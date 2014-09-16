@@ -52,7 +52,7 @@ The following message:
   message B {
 	option (gogoproto.description) = true;
 	optional A A = 1 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "dropbox/gogoprotobuf/test/custom.Uint128", (gogoproto.nullable) = false];
+	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
   }
 
 given to the description plugin, will generate the following code:
@@ -74,9 +74,9 @@ This package is subject to change, since a use has not been figured out yet.
 package description
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
     "fmt"
 )
 
@@ -136,7 +136,7 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 
 func (this *plugin) GenerateImports(file *generator.FileDescriptor) {
     if this.used {
-        this.P(`import google_protobuf "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"`)
+        this.P(`import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"`)
     }
 }
 

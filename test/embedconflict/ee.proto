@@ -26,7 +26,7 @@
 
 package embedconflict;
 
-import "dropbox/gogoprotobuf/gogoproto/gogo.proto";
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 
 message E {
 	optional int64 Field1 = 1;

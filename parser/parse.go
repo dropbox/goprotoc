@@ -29,8 +29,8 @@
 package parser
 
 import (
-    "dropbox/gogoprotobuf/proto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
+    "github.com/dropbox/goprotoc/proto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
     "os/exec"
     "strings"
 )

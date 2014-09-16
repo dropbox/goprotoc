@@ -26,7 +26,7 @@
 
 package defaultcheck;
 
-import "dropbox/gogoprotobuf/gogoproto/gogo.proto";
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 
 message A {
 	extensions 1 to max;

@@ -34,10 +34,10 @@ import (
     "strconv"
     "strings"
 
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/proto"
-    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
-    plugin "dropbox/gogoprotobuf/protoc-gen-dgo/plugin"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/proto"
+    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+    plugin "github.com/dropbox/goprotoc/protoc-gen-dgo/plugin"
     "path"
 )
 

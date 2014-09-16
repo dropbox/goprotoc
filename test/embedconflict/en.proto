@@ -26,7 +26,7 @@
 
 package embedconflict;
 
-import "dropbox/gogoprotobuf/gogoproto/gogo.proto";
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 
 message F {
 	optional G G = 2 [(gogoproto.embed) = true, (gogoproto.customname) = "G"];

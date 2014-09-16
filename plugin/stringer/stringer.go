@@ -53,7 +53,7 @@ The following message:
   message A {
 	optional string Description = 1;
 	optional int64 Number = 2;
-	optional bytes Id = 3 [(gogoproto.customtype) = "dropbox/gogoprotobuf/test/custom.Uuid"];
+	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uuid"];
   }
 
 given to the stringer stringer, will generate the following code:
@@ -91,8 +91,8 @@ not print their values, while the generated String method will always print all 
 package stringer
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
     "strings"
 )
 

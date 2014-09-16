@@ -29,7 +29,7 @@ package moredefaults
 import (
     "testing"
 
-    test "dropbox/gogoprotobuf/test/example"
+    test "github.com/dropbox/goprotoc/test/example"
 )
 
 func TestDefaults(t *testing.T) {

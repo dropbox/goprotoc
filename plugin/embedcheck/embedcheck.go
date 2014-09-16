@@ -44,8 +44,8 @@ For incorrect usage of embed with tests see:
 package embedcheck
 
 import (
-    "dropbox/gogoprotobuf/gogoproto"
-    "dropbox/gogoprotobuf/protoc-gen-dgo/generator"
+    "github.com/dropbox/goprotoc/gogoproto"
+    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
     "fmt"
     "os"
 )

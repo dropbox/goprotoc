@@ -27,7 +27,7 @@
 package unrecognized
 
 import (
-    dropbox_gogoprotobuf_proto "dropbox/gogoprotobuf/proto"
+    dropbox_gogoprotobuf_proto "github.com/dropbox/goprotoc/proto"
     math_rand "math/rand"
     "testing"
     time "time"

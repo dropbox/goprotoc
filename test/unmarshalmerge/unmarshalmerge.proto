@@ -26,7 +26,7 @@
 
 package unmarshalmerge;
 
-import "dropbox/gogoprotobuf/gogoproto/gogo.proto";
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 
 option (gogoproto.equal_all) = true;
 option (gogoproto.verbose_equal_all) = true;

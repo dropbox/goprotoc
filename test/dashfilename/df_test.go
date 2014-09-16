@@ -5,7 +5,7 @@ import (
     "os/exec"
     "testing"
 
-    "dropbox/gogoprotobuf/test_config"
+    "github.com/dropbox/goprotoc/test_config"
 )
 
 //Issue 16 : https://code.google.com/p/gogoprotobuf/issues/detail?id=16
