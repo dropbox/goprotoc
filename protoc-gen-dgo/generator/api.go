@@ -25,8 +25,103 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
-TODO(andrei): write how to use it
+The api function generates accessor methods in respect with the c++ api
+documentation: https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
 
+The generation of api tests are enabled using one of the following extensions:
+
+  - testgen
+  - testgen_all
+
+Given the following message:
+
+message TestSingular {
+    optional TestMessage msgs = 1;
+    optional double vald = 2;
+    optional float valf = 3;
+}
+
+the api code will generate the following code:
+
+func (m *TestSingular) MutateMsgs() (field *TestMessage, err error) {
+    if m == nil {
+        return nil, errors.New("Cannot mutate a nil message")
+    }
+    if !m.xxx_IsMsgsSet {
+        m.xxx_IsMsgsSet = true
+        m.msgs = new(TestMessage)
+    }
+    return m.msgs, nil
+}
+
+func (m *TestSingular) HasMsgs() (isSet bool) {
+    if m != nil && m.xxx_IsMsgsSet {
+        return true
+    }
+    return false
+}
+
+func (m *TestSingular) ClearMsgs() {
+    if m != nil {
+        m.msgs.Clear()
+        m.xxx_IsMsgsSet = false
+
+    }
+}
+
+func (m *TestSingular) SetVald(value float64) (err error) {
+    if m == nil {
+        return errors.New("Cannot assign to nil message")
+    }
+    m.xxx_IsValdSet = true
+    m.vald = value
+    return nil
+}
+
+func (m *TestSingular) HasVald() (isSet bool) {
+    if m != nil && m.xxx_IsValdSet {
+        return true
+    }
+    return false
+}
+
+func (m *TestSingular) ClearVald() {
+    if m != nil {
+        m.xxx_IsValdSet = false
+    }
+}
+
+func (m *TestSingular) SetValf(value float32) (err error) {
+    if m == nil {
+        return errors.New("Cannot assign to nil message")
+    }
+    m.xxx_IsValfSet = true
+    m.valf = value
+    return nil
+}
+
+func (m *TestSingular) HasValf() (isSet bool) {
+    if m != nil && m.xxx_IsValfSet {
+        return true
+    }
+    return false
+}
+
+func (m *TestSingular) ClearValf() {
+    if m != nil {
+        m.xxx_IsValfSet = false
+    }
+}
+
+func (m *TestSingular) Clear() {
+    if m != nil {
+        m.msgs.Clear()
+        m.xxx_IsMsgsSet = false
+
+        m.ClearVald()
+        m.ClearValf()
+    }
+}
 */
 
 package generator
@@ -34,8 +129,8 @@ package generator
 import (
     "strings"
 
-    "github.com/dropbox/goprotoc/gogoproto"
-    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+    "dropbox/gogoprotobuf/gogoproto"
+    descriptor "dropbox/gogoprotobuf/protoc-gen-dgo/descriptor"
 )
 
 const expResizeThreshold string = "1000000"
