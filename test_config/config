@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export PROTO_PATH=".:/srv/go-server/src"

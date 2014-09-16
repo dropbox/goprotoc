@@ -1,0 +1,4 @@
+#/bin/bash
+rm -rf /srv/thirdparty/edgestore-stage/go/bin/
+rm -rf /srv/thirdparty/edgestore-stage/go/pkg/linux_amd64/code.google.com/p/gogoprotobuf
+
