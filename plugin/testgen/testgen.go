@@ -53,7 +53,7 @@ The following message:
   message A {
 	optional string Description = 1 [(gogoproto.nullable) = false];
 	optional int64 Number = 2 [(gogoproto.nullable) = false];
-	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uuid", (gogoproto.nullable) = false];
+	optional int64 Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id", (gogoproto.nullable) = false];
   }
 
 given to the testgen plugin, will generate the following test code:

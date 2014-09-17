@@ -60,85 +60,92 @@ The following message:
   option (gogoproto.verbose_equal_all) = true;
 
   message B {
-	optional A A = 1 [(gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
+    option (gogoproto.description) = true;
+    optional string A = 1 [(gogoproto.embed) = true];
+    repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
   }
 
 given to the equal plugin, will generate the following code:
 
-	func (this *B) VerboseEqual(that interface{}) error {
-		if that == nil {
-			if this == nil {
-				return nil
-			}
-			return fmt.Errorf("that == nil && this != nil")
-		}
+    func (this *B) VerboseEqual(that interface{}) error {
+        if that == nil {
+            if this == nil {
+                return nil
+            }
+            return fmt1.Errorf("that == nil && this != nil")
+        }
 
-		that1, ok := that.(*B)
-		if !ok {
-			return fmt.Errorf("that is not of type *B")
-		}
-		if that1 == nil {
-			if this == nil {
-				return nil
-			}
-			return fmt.Errorf("that is type *B but is nil && this != nil")
-		} else if this == nil {
-			return fmt.Errorf("that is type *Bbut is not nil && this == nil")
-		}
-		if !this.A.Equal(&that1.A) {
-			return fmt.Errorf("A this(%v) Not Equal that(%v)", this.A, that1.A)
-		}
-		if len(this.G) != len(that1.G) {
-			return fmt.Errorf("G this(%v) Not Equal that(%v)", len(this.G), len(that1.G))
-		}
-		for i := range this.G {
-			if !this.G[i].Equal(that1.G[i]) {
-				return fmt.Errorf("G this[%v](%v) Not Equal that[%v](%v)", i, this.G[i], i, that1.G[i])
-			}
-		}
-		if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-			return fmt.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
-		}
-		return nil
-	}
+        that1, ok := that.(*B)
+        if !ok {
+            return fmt1.Errorf("that is not of type *B")
+        }
+        if that1 == nil {
+            if this == nil {
+                return nil
+            }
+            return fmt1.Errorf("that is type *B but is nil && this != nil")
+        } else if this == nil {
+            return fmt1.Errorf("that is type *Bbut is not nil && this == nil")
+        }
+        if this.xxx_IsASet != that1.xxx_IsASet {
+            return fmt1.Errorf("that.a is not equal to this.a")
+        }
+        if this.xxx_IsASet && this.a != that1.a {
+            return fmt1.Errorf("a this(%v) Not Equal that(%v)", this.a, that1.a)
+        }
+        if this.xxx_LenG != that1.xxx_LenG {
+            return fmt1.Errorf("that.g is not equal to this.g")
+        }
+        for i := 0; i < this.xxx_LenG; i++ {
+            if this.g[i] != that1.g[i] {
+                return fmt1.Errorf("g this[%v](%v) Not Equal that[%v](%v)", i, this.g[i], i, that1.g[i])
+            }
+        }
+        if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+            return fmt1.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
+        }
+        return nil
+    }
 
 	func (this *B) Equal(that interface{}) bool {
-		if that == nil {
-			if this == nil {
-				return true
-			}
-			return false
-		}
+        if that == nil {
+            if this == nil {
+                return true
+            }
+            return false
+        }
 
-		that1, ok := that.(*B)
-		if !ok {
-			return false
-		}
-		if that1 == nil {
-			if this == nil {
-				return true
-			}
-			return false
-		} else if this == nil {
-			return false
-		}
-		if !this.A.Equal(&that1.A) {
-			return false
-		}
-		if len(this.G) != len(that1.G) {
-			return false
-		}
-		for i := range this.G {
-			if !this.G[i].Equal(that1.G[i]) {
-				return false
-			}
-		}
-		if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-			return false
-		}
-		return true
-	}
+        that1, ok := that.(*B)
+        if !ok {
+            return false
+        }
+        if that1 == nil {
+            if this == nil {
+                return true
+            }
+            return false
+        } else if this == nil {
+            return false
+        }
+        if this.xxx_IsASet != that1.xxx_IsASet {
+            return false
+        }
+        if this.xxx_IsASet && this.a != that1.a {
+            return false
+        }
+        if this.xxx_LenG != that1.xxx_LenG {
+            return false
+        }
+        for i := 0; i < this.xxx_LenG; i++ {
+            if this.g[i] != that1.g[i] {
+                return false
+            }
+        }
+        if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
+            return false
+        }
+        return true
+    }
 
 and the following test code:
 
@@ -168,6 +175,7 @@ import (
 type plugin struct {
     *generator.Generator
     generator.PluginImports
+    fmtPkg   generator.Single
     bytesPkg generator.Single
 }
 
@@ -185,6 +193,7 @@ func (p *plugin) Init(g *generator.Generator) {
 
 func (p *plugin) Generate(file *generator.FileDescriptor) {
     p.PluginImports = generator.NewPluginImports(p.Generator)
+    p.fmtPkg = p.NewImport("fmt")
     p.bytesPkg = p.NewImport("bytes")
 
     for _, msg := range file.Messages() {
@@ -217,7 +226,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
     p.Out()
     p.P(`}`)
     if verbose {
-        p.P(`return `, p.Pkg["fmt"], `.Errorf("that == nil && this != nil")`)
+        p.P(`return `, p.fmtPkg.Use(), `.Errorf("that == nil && this != nil")`)
     } else {
         p.P(`return false`)
     }
@@ -228,7 +237,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
     p.P(`if !ok {`)
     p.In()
     if verbose {
-        p.P(`return `, p.Pkg["fmt"], `.Errorf("that is not of type *`, ccTypeName, `")`)
+        p.P(`return `, p.fmtPkg.Use(), `.Errorf("that is not of type *`, ccTypeName, `")`)
     } else {
         p.P(`return false`)
     }
@@ -246,7 +255,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
     p.Out()
     p.P(`}`)
     if verbose {
-        p.P(`return `, p.Pkg["fmt"], `.Errorf("that is type *`, ccTypeName, ` but is nil && this != nil")`)
+        p.P(`return `, p.fmtPkg.Use(), `.Errorf("that is type *`, ccTypeName, ` but is nil && this != nil")`)
     } else {
         p.P(`return false`)
     }
@@ -254,7 +263,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
     p.P(`} else if this == nil {`)
     p.In()
     if verbose {
-        p.P(`return `, p.Pkg["fmt"], `.Errorf("that is type *`, ccTypeName, `but is not nil && this == nil")`)
+        p.P(`return `, p.fmtPkg.Use(), `.Errorf("that is type *`, ccTypeName, `but is not nil && this == nil")`)
     } else {
         p.P(`return false`)
     }
@@ -264,7 +273,6 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
     for _, field := range message.Field {
         fieldname := p.GetFieldName(message, field)
         repeated := field.IsRepeated()
-        ctype := gogoproto.IsCustomType(field)
         if repeated {
             p.P(`if this.`, generator.SizerName(fieldname), ` != that1.`, generator.SizerName(fieldname), ` {`)
         } else {
@@ -272,7 +280,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
         }
         p.In()
         if verbose {
-            p.P(`return `, p.Pkg["fmt"], `.Errorf("that.`, fieldname, ` is not equal to this.`, fieldname, `")`)
+            p.P(`return `, p.fmtPkg.Use(), `.Errorf("that.`, fieldname, ` is not equal to this.`, fieldname, `")`)
         } else {
             p.P(`return false`)
         }
@@ -280,20 +288,16 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
         p.P(`}`)
 
         if !repeated {
-            if ctype {
+            if field.IsMessage() || p.IsGroup(field) {
                 p.P(`if this.`, generator.SetterName(fieldname), ` && !this.`, fieldname, `.Equal(that1.`, fieldname, `) {`)
+            } else if field.IsBytes() {
+                p.P(`if this.`, generator.SetterName(fieldname), ` && !`, p.bytesPkg.Use(), `.Equal(this.`, fieldname, `, that1.`, fieldname, `) {`)
             } else {
-                if field.IsMessage() || p.IsGroup(field) {
-                    p.P(`if this.`, generator.SetterName(fieldname), ` && !this.`, fieldname, `.Equal(that1.`, fieldname, `) {`)
-                } else if field.IsBytes() {
-                    p.P(`if this.`, generator.SetterName(fieldname), ` && !`, p.bytesPkg.Use(), `.Equal(this.`, fieldname, `, that1.`, fieldname, `) {`)
-                } else {
-                    p.P(`if this.`, generator.SetterName(fieldname), ` && this.`, fieldname, ` != that1.`, fieldname, `{`)
-                }
+                p.P(`if this.`, generator.SetterName(fieldname), ` && this.`, fieldname, ` != that1.`, fieldname, `{`)
             }
             p.In()
             if verbose {
-                p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, ` this(%v) Not Equal that(%v)", this.`, fieldname, `, that1.`, fieldname, `)`)
+                p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, ` this(%v) Not Equal that(%v)", this.`, fieldname, `, that1.`, fieldname, `)`)
             } else {
                 p.P(`return false`)
             }
@@ -302,22 +306,18 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
         } else {
             p.P(`for i := 0; i < this.`, generator.SizerName(fieldname), `; i++ {`)
             p.In()
-            if ctype {
+            if field.IsMessage() || p.IsGroup(field) {
                 p.P(`if !this.`, fieldname, `[i].Equal(that1.`, fieldname, `[i]) {`)
+            } else if field.IsBytes() {
+                p.P(`if !`, p.bytesPkg.Use(), `.Equal(this.`, fieldname, `[i], that1.`, fieldname, `[i]) {`)
+            } else if field.IsString() {
+                p.P(`if this.`, fieldname, `[i] != that1.`, fieldname, `[i] {`)
             } else {
-                if field.IsMessage() || p.IsGroup(field) {
-                    p.P(`if !this.`, fieldname, `[i].Equal(that1.`, fieldname, `[i]) {`)
-                } else if field.IsBytes() {
-                    p.P(`if !`, p.bytesPkg.Use(), `.Equal(this.`, fieldname, `[i], that1.`, fieldname, `[i]) {`)
-                } else if field.IsString() {
-                    p.P(`if this.`, fieldname, `[i] != that1.`, fieldname, `[i] {`)
-                } else {
-                    p.P(`if this.`, fieldname, `[i] != that1.`, fieldname, `[i] {`)
-                }
+                p.P(`if this.`, fieldname, `[i] != that1.`, fieldname, `[i] {`)
             }
             p.In()
             if verbose {
-                p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, ` this[%v](%v) Not Equal that[%v](%v)", i, this.`, fieldname, `[i], i, that1.`, fieldname, `[i])`)
+                p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, ` this[%v](%v) Not Equal that[%v](%v)", i, this.`, fieldname, `[i], i, that1.`, fieldname, `[i])`)
             } else {
                 p.P(`return false`)
             }
@@ -337,7 +337,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
             p.P(`if !v.Equal(&v2) {`)
             p.In()
             if verbose {
-                p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, ` this[%v](%v) Not Equal that[%v](%v)", k, this.`, fieldname, `[k], k, that1.`, fieldname, `[k])`)
+                p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, ` this[%v](%v) Not Equal that[%v](%v)", k, this.`, fieldname, `[k], k, that1.`, fieldname, `[k])`)
             } else {
                 p.P(`return false`)
             }
@@ -347,7 +347,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
             p.P(`} else  {`)
             p.In()
             if verbose {
-                p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, `[%v] Not In that", k)`)
+                p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, `[%v] Not In that", k)`)
             } else {
                 p.P(`return false`)
             }
@@ -361,7 +361,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
             p.P(`if _, ok := this.`, fieldname, `[k]; !ok {`)
             p.In()
             if verbose {
-                p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, `[%v] Not In this", k)`)
+                p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, `[%v] Not In this", k)`)
             } else {
                 p.P(`return false`)
             }
@@ -373,7 +373,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
             p.P(`if !`, p.bytesPkg.Use(), `.Equal(this.`, fieldname, `, that1.`, fieldname, `) {`)
             p.In()
             if verbose {
-                p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, ` this(%v) Not Equal that(%v)", this.`, fieldname, `, that1.`, fieldname, `)`)
+                p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, ` this(%v) Not Equal that(%v)", this.`, fieldname, `, that1.`, fieldname, `)`)
             } else {
                 p.P(`return false`)
             }
@@ -385,7 +385,7 @@ func (p *plugin) generateMessage(message *generator.Descriptor, verbose bool, ha
     p.P(`if !`, p.bytesPkg.Use(), `.Equal(this.`, fieldname, `, that1.`, fieldname, `) {`)
     p.In()
     if verbose {
-        p.P(`return `, p.Pkg["fmt"], `.Errorf("`, fieldname, ` this(%v) Not Equal that(%v)", this.`, fieldname, `, that1.`, fieldname, `)`)
+        p.P(`return `, p.fmtPkg.Use(), `.Errorf("`, fieldname, ` this(%v) Not Equal that(%v)", this.`, fieldname, `, that1.`, fieldname, `)`)
     } else {
         p.P(`return false`)
     }

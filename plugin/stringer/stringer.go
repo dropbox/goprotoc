@@ -53,7 +53,7 @@ The following message:
   message A {
 	optional string Description = 1;
 	optional int64 Number = 2;
-	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uuid"];
+	optional int64 Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
   }
 
 given to the stringer stringer, will generate the following code:
