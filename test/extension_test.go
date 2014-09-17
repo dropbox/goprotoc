@@ -83,7 +83,8 @@ func init() {
 	fieldABytes = append(fieldABytes, uint8(fieldABits>>56))
 }
 
-func TestExtensionsMyExtendable(t *testing.T) {
+//TODO(andrei): extension get without using reflect 
+func testExtensionsMyExtendable(t *testing.T) {
 	m := NewPopulatedMyExtendable(extr, false)
 	err := proto.SetExtension(m, E_FieldA, &fieldA)
 	if err != nil {
@@ -94,7 +95,7 @@ func TestExtensionsMyExtendable(t *testing.T) {
 	check(t, m, fieldA, E_FieldA)
 }
 
-func TestExtensionsNoExtensionsMapSetExtension(t *testing.T) {
+func testExtensionsNoExtensionsMapSetExtension(t *testing.T) {
 	m := NewPopulatedNoExtensionsMap(extr, false)
 	err := proto.SetExtension(m, E_FieldA1, &fieldA)
 	if err != nil {
@@ -103,7 +104,7 @@ func TestExtensionsNoExtensionsMapSetExtension(t *testing.T) {
 	check(t, m, fieldA, E_FieldA1)
 }
 
-func TestExtensionsNoExtensionsMapSetRawExtension(t *testing.T) {
+func testExtensionsNoExtensionsMapSetRawExtension(t *testing.T) {
 	m := NewPopulatedNoExtensionsMap(extr, false)
 	proto.SetRawExtension(m, 100, fieldABytes)
 	check(t, m, fieldA, E_FieldA1)

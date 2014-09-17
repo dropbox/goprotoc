@@ -54,101 +54,95 @@ The following message:
 
   message B {
 	option (gogoproto.description) = true;
-	optional A A = 1 [(gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
+	optional string A = 1 [(gogoproto.embed) = true];
+	repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
   }
 
 the unmarshal will generate the following code:
 
-  func (m *B) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return proto.ErrWrongType
-			}
-			var msglen int
+	func (m *B) Unmarshal(data []byte) error {
+		l := len(data)
+		index := 0
+		for index < l {
+			var wire uint64
 			for shift := uint(0); ; shift += 7 {
 				if index >= l {
 					return io.ErrUnexpectedEOF
 				}
 				b := data[index]
 				index++
-				msglen |= (int(b) & 0x7F) << shift
+				wire |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.A.Unmarshal(data[index:postIndex]); err != nil {
-				return err
-			}
-			index = postIndex
-		case 2:
-			if wireType != 2 {
-				return proto.ErrWrongType
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return fmt.Errorf("proto: wrong wireType = %d for field a", wireType)
+				}
+				m.xxx_IsASet = true
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if index >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := data[index]
+					index++
+					stringLen |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				postIndex := index + int(stringLen)
+				if postIndex > l {
 					return io.ErrUnexpectedEOF
 				}
-				b := data[index]
-				index++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
+				m.a = string(data[index:postIndex])
+				index = postIndex
+			case 2:
+				if wireType != 0 {
+					return fmt.Errorf("proto: wrong wireType = %d for field g", wireType)
 				}
-			}
-			postIndex := index + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.G = append(m.G, dropbox_gogoprotobuf_test_custom.Uint128{})
-			m.G[len(m.G)-1].Unmarshal(data[index:postIndex])
-			index = postIndex
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
+				m.xxx_LenG += 1
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if index >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := data[index]
+					index++
+					v |= (int64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
 				}
+				m.g = append(m.g, github_com_dropbox_goprotoc_test.Id(v))
+			default:
+				var sizeOfWire int
+				for {
+					sizeOfWire++
+					wire >>= 7
+					if wire == 0 {
+						break
+					}
+				}
+				index -= sizeOfWire
+				skippy, err := proto.Skip(data[index:])
+				if err != nil {
+					return err
+				}
+				if (index + skippy) > l {
+					return io.ErrUnexpectedEOF
+				}
+				m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
+				index += skippy
 			}
-			index -= sizeOfWire
-			skippy, err := dropbox_gogoprotobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.XXX_unrecognized = append(m.XXX_unrecognized, data[index:index+skippy]...)
-			index += skippy
 		}
-	}
-	return nil
-  }
+		return nil
+	}    
 
 Remember when using this code to call proto.Unmarshal.
 This will call m.Reset and invoke the generated Unmarshal method for you.
@@ -220,10 +214,19 @@ func (g *Generator) decodeFixed64(varName string, typeName string) {
 
 func (g *Generator) field(field *descriptor.FieldDescriptorProto, fieldname string) {
 	repeated := field.IsRepeated()
+	gotype, _ := g.GoType(nil, field)
+	fieldtype := GoTypeToName(gotype)
 	if repeated {
 		g.P(`m.`, SizerName(fieldname), ` += 1`)
 	} else {
 		g.P(`m.`, SetterName(fieldname), ` = true`)
+	}
+	if gogoproto.IsCustomType(field) {
+		_, typ, err := GetCustomType(field)
+		if err != nil {
+			panic(err)
+		}
+		fieldtype = typ
 	}
 	switch *field.Type {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
@@ -231,72 +234,72 @@ func (g *Generator) field(field *descriptor.FieldDescriptorProto, fieldname stri
 			g.P(`var v uint64`)
 			g.decodeFixed64("v", "uint64")
 			g.P(`v2 := `, g.Pkg["math"], `.Float64frombits(v)`)
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v2)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v2))`)
 		} else {
 			g.P(`var v uint64`)
 			g.decodeFixed64("v", "uint64")
-			g.P(`m.`, fieldname, ` = `, g.Pkg["math"], `.Float64frombits(v)`)
+			g.P(`m.`, fieldname, ` = `, fieldtype, `(`, g.Pkg["math"], `.Float64frombits(v))`)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
 		if repeated {
 			g.P(`var v uint32`)
 			g.decodeFixed32("v", "uint32")
 			g.P(`v2 := `, g.Pkg["math"], `.Float32frombits(v)`)
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v2)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v2))`)
 		} else {
 			g.P(`var v uint32`)
 			g.decodeFixed32("v", "uint32")
-			g.P(`m.`, fieldname, ` = `, g.Pkg["math"], `.Float32frombits(v)`)
+			g.P(`m.`, fieldname, ` = `, fieldtype, `(`, g.Pkg["math"], `.Float32frombits(v))`)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_INT64:
 		if repeated {
 			g.P(`var v int64`)
 			g.decodeVarint("v", "int64")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeVarint("m."+fieldname, "int64")
+			g.decodeVarint("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_UINT64:
 		if repeated {
 			g.P(`var v uint64`)
 			g.decodeVarint("v", "uint64")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeVarint("m."+fieldname, "uint64")
+			g.decodeVarint("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_INT32:
 		if repeated {
 			g.P(`var v int32`)
 			g.decodeVarint("v", "int32")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeVarint("m."+fieldname, "int32")
+			g.decodeVarint("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_FIXED64:
 		if repeated {
 			g.P(`var v uint64`)
 			g.decodeFixed64("v", "uint64")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeFixed64("m."+fieldname, "uint64")
+			g.decodeFixed64("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_FIXED32:
 		if repeated {
 			g.P(`var v uint32`)
 			g.decodeFixed32("v", "uint32")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeFixed32("m."+fieldname, "uint32")
+			g.decodeFixed32("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
 		if repeated {
 			g.P(`var v int`)
 			g.decodeVarint("v", "int")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, bool(v != 0))`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(bool(v != 0)))`)
 		} else {
 			g.P(`var v int`)
 			g.decodeVarint("v", "int")
-			g.P(`m.`, fieldname, ` = bool(v != 0)`)
+			g.P(`m.`, fieldname, ` = `, fieldtype, `(bool(v != 0))`)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
 		g.P(`var stringLen uint64`)
@@ -308,9 +311,9 @@ func (g *Generator) field(field *descriptor.FieldDescriptorProto, fieldname stri
 		g.Out()
 		g.P(`}`)
 		if repeated {
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, string(data[index:postIndex]))`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(data[index:postIndex]))`)
 		} else {
-			g.P(`m.`, fieldname, ` = string(data[index:postIndex])`)
+			g.P(`m.`, fieldname, ` = `, fieldtype, `(data[index:postIndex])`)
 		}
 		g.P(`index = postIndex`)
 	case descriptor.FieldDescriptorProto_TYPE_GROUP:
@@ -355,19 +358,11 @@ func (g *Generator) field(field *descriptor.FieldDescriptorProto, fieldname stri
 				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, data[index:postIndex]...)`)
 			}
 		} else {
-			_, ctyp, err := GetCustomType(field)
-			if err != nil {
-				panic(err)
-			}
 			if repeated {
-				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, ctyp, `{})`)
-				g.P(`m.`, fieldname, `[len(m.`, fieldname, `)-1].Unmarshal(data[index:postIndex])`)
+				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, make(([]byte), postIndex-index))`)
+				g.P(`copy(m.`, fieldname, `[len(m.`, fieldname, `)-1], data[index:postIndex])`)
 			} else {
-				g.P(`if err := m.`, fieldname, `.Unmarshal(data[index:postIndex]); err != nil {`)
-				g.In()
-				g.P(`return err`)
-				g.Out()
-				g.P(`}`)
+				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, data[index:postIndex]...)`)
 			}
 		}
 		g.P(`index = postIndex`)
@@ -375,52 +370,56 @@ func (g *Generator) field(field *descriptor.FieldDescriptorProto, fieldname stri
 		if repeated {
 			g.P(`var v uint32`)
 			g.decodeVarint("v", "uint32")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeVarint("m."+fieldname, "uint32")
+			g.decodeVarint("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_ENUM:
-		typName := g.TypeName(g.ObjectNamed(field.GetTypeName()))
-		if repeated {
-			g.P(`var v `, typName)
-			g.decodeVarint("v", typName)
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+		if !gogoproto.IsCustomType(field) {
+			typName := g.TypeName(g.ObjectNamed(field.GetTypeName()))
+			if repeated {
+				g.P(`var v `, typName)
+				g.decodeVarint("v", typName)
+				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			} else {
+				g.decodeVarint("m."+fieldname, typName)
+			}
 		} else {
-			g.decodeVarint("m."+fieldname, typName)
+			panic("Enum custom types is not supported!")
 		}
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED32:
 		if repeated {
 			g.P(`var v int32`)
 			g.decodeFixed32("v", "int32")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeFixed32("m."+fieldname, "int32")
+			g.decodeFixed32("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED64:
 		if repeated {
 			g.P(`var v int64`)
 			g.decodeFixed64("v", "int64")
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.decodeFixed64("m."+fieldname, "int64")
+			g.decodeFixed64("m."+fieldname, fieldtype)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_SINT32:
 		g.P(`var v int32`)
 		g.decodeVarint("v", "int32")
 		g.P(`v = int32((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))`)
 		if repeated {
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(v))`)
 		} else {
-			g.P(`m.`, fieldname, ` = v`)
+			g.P(`m.`, fieldname, ` = `, fieldtype, `(v)`)
 		}
 	case descriptor.FieldDescriptorProto_TYPE_SINT64:
 		g.P(`var v uint64`)
 		g.decodeVarint("v", "uint64")
 		g.P(`v = (v >> 1) ^ uint64((int64(v&1)<<63)>>63)`)
 		if repeated {
-			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, int64(v))`)
+			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, fieldtype, `(int64(v)))`)
 		} else {
-			g.P(`m.`, fieldname, ` = int64(v)`)
+			g.P(`m.`, fieldname, ` = `, fieldtype, `(int64(v))`)
 		}
 	default:
 		panic("not implemented")
