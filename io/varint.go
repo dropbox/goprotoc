@@ -29,8 +29,8 @@
 package io
 
 import (
-    "github.com/dropbox/goprotoc/proto"
     "encoding/binary"
+    "github.com/dropbox/goprotoc/proto"
     "godropbox/errors"
     "io"
 )

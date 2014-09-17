@@ -50,9 +50,9 @@ Btw all the output can be seen at:
 The following message:
 
   message B {
-	option (gogoproto.description) = true;
-	optional A A = 1 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
+    option (gogoproto.description) = true;
+    optional string A = 1 [(gogoproto.embed) = true];
+    repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
   }
 
 given to the description plugin, will generate the following code:
@@ -64,7 +64,7 @@ given to the description plugin, will generate the following code:
 and the following test code:
 
   func TestDescription(t *testing9.T) {
-	ExampleDescription()
+    ExampleDescription()
   }
 
 The hope is to use this struct in some way instead of reflect.
@@ -74,10 +74,10 @@ This package is subject to change, since a use has not been figured out yet.
 package description
 
 import (
+    "fmt"
     "github.com/dropbox/goprotoc/gogoproto"
     descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
     "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
-    "fmt"
 )
 
 type plugin struct {
