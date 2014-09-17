@@ -27,42 +27,42 @@
 package description
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/plugin/testgen"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/plugin/testgen"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {
-    *generator.Generator
+	*generator.Generator
 }
 
 func NewTest(g *generator.Generator) testgen.TestPlugin {
-    return &test{g}
+	return &test{g}
 }
 
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
-    used := false
-    testingPkg := imports.NewImport("testing")
-    for _, message := range file.Messages() {
-        if !gogoproto.HasDescription(file.FileDescriptorProto, message.DescriptorProto) ||
-            !gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
-        used = true
-    }
+	used := false
+	testingPkg := imports.NewImport("testing")
+	for _, message := range file.Messages() {
+		if !gogoproto.HasDescription(file.FileDescriptorProto, message.DescriptorProto) ||
+			!gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
+		used = true
+	}
 
-    if used {
-        localName := generator.FileName(file)
-        p.P(`func Test`, localName, `Description(t *`, testingPkg.Use(), `.T) {`)
-        p.In()
-        p.P(localName, `Description()`)
-        p.Out()
-        p.P(`}`)
+	if used {
+		localName := generator.FileName(file)
+		p.P(`func Test`, localName, `Description(t *`, testingPkg.Use(), `.T) {`)
+		p.In()
+		p.P(localName, `Description()`)
+		p.Out()
+		p.P(`}`)
 
-    }
-    return used
+	}
+	return used
 }
 
 func init() {
-    testgen.RegisterTestPlugin(NewTest)
+	testgen.RegisterTestPlugin(NewTest)
 }

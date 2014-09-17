@@ -37,325 +37,325 @@
 package proto
 
 import (
-    "reflect"
+	"reflect"
 )
 
 type Sizer interface {
-    Size() int
+	Size() int
 }
 
 func (o *Buffer) enc_ext_slice_byte(p *Properties, base structPointer) error {
-    s := *structPointer_Bytes(base, p.field)
-    if s == nil {
-        return ErrNil
-    }
-    o.buf = append(o.buf, s...)
-    return nil
+	s := *structPointer_Bytes(base, p.field)
+	if s == nil {
+		return ErrNil
+	}
+	o.buf = append(o.buf, s...)
+	return nil
 }
 
 func size_ext_slice_byte(p *Properties, base structPointer) (n int) {
-    s := *structPointer_Bytes(base, p.field)
-    if s == nil {
-        return 0
-    }
-    n += len(s)
-    return
+	s := *structPointer_Bytes(base, p.field)
+	if s == nil {
+		return 0
+	}
+	n += len(s)
+	return
 }
 
 // Encode a reference to bool pointer.
 func (o *Buffer) enc_ref_bool(p *Properties, base structPointer) error {
-    v := structPointer_RefBool(base, p.field)
-    if v == nil {
-        return ErrNil
-    }
-    x := 0
-    if *v {
-        x = 1
-    }
-    o.buf = append(o.buf, p.tagcode...)
-    p.valEnc(o, uint64(x))
-    return nil
+	v := structPointer_RefBool(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	x := 0
+	if *v {
+		x = 1
+	}
+	o.buf = append(o.buf, p.tagcode...)
+	p.valEnc(o, uint64(x))
+	return nil
 }
 
 func size_ref_bool(p *Properties, base structPointer) int {
-    v := structPointer_RefBool(base, p.field)
-    if v == nil {
-        return 0
-    }
-    return len(p.tagcode) + 1 // each bool takes exactly one byte
+	v := structPointer_RefBool(base, p.field)
+	if v == nil {
+		return 0
+	}
+	return len(p.tagcode) + 1 // each bool takes exactly one byte
 }
 
 // Encode a reference to int32 pointer.
 func (o *Buffer) enc_ref_int32(p *Properties, base structPointer) error {
-    v := structPointer_RefWord32(base, p.field)
-    if refWord32_IsNil(v) {
-        return ErrNil
-    }
-    x := refWord32_Get(v)
-    o.buf = append(o.buf, p.tagcode...)
-    p.valEnc(o, uint64(x))
-    return nil
+	v := structPointer_RefWord32(base, p.field)
+	if refWord32_IsNil(v) {
+		return ErrNil
+	}
+	x := refWord32_Get(v)
+	o.buf = append(o.buf, p.tagcode...)
+	p.valEnc(o, uint64(x))
+	return nil
 }
 
 func size_ref_int32(p *Properties, base structPointer) (n int) {
-    v := structPointer_RefWord32(base, p.field)
-    if refWord32_IsNil(v) {
-        return 0
-    }
-    x := refWord32_Get(v)
-    n += len(p.tagcode)
-    n += p.valSize(uint64(x))
-    return
+	v := structPointer_RefWord32(base, p.field)
+	if refWord32_IsNil(v) {
+		return 0
+	}
+	x := refWord32_Get(v)
+	n += len(p.tagcode)
+	n += p.valSize(uint64(x))
+	return
 }
 
 // Encode a reference to an int64 pointer.
 func (o *Buffer) enc_ref_int64(p *Properties, base structPointer) error {
-    v := structPointer_RefWord64(base, p.field)
-    if refWord64_IsNil(v) {
-        return ErrNil
-    }
-    x := refWord64_Get(v)
-    o.buf = append(o.buf, p.tagcode...)
-    p.valEnc(o, x)
-    return nil
+	v := structPointer_RefWord64(base, p.field)
+	if refWord64_IsNil(v) {
+		return ErrNil
+	}
+	x := refWord64_Get(v)
+	o.buf = append(o.buf, p.tagcode...)
+	p.valEnc(o, x)
+	return nil
 }
 
 func size_ref_int64(p *Properties, base structPointer) (n int) {
-    v := structPointer_RefWord64(base, p.field)
-    if refWord64_IsNil(v) {
-        return 0
-    }
-    x := refWord64_Get(v)
-    n += len(p.tagcode)
-    n += p.valSize(x)
-    return
+	v := structPointer_RefWord64(base, p.field)
+	if refWord64_IsNil(v) {
+		return 0
+	}
+	x := refWord64_Get(v)
+	n += len(p.tagcode)
+	n += p.valSize(x)
+	return
 }
 
 // Encode a reference to a string pointer.
 func (o *Buffer) enc_ref_string(p *Properties, base structPointer) error {
-    v := structPointer_RefString(base, p.field)
-    if v == nil {
-        return ErrNil
-    }
-    x := *v
-    o.buf = append(o.buf, p.tagcode...)
-    o.EncodeStringBytes(x)
-    return nil
+	v := structPointer_RefString(base, p.field)
+	if v == nil {
+		return ErrNil
+	}
+	x := *v
+	o.buf = append(o.buf, p.tagcode...)
+	o.EncodeStringBytes(x)
+	return nil
 }
 
 func size_ref_string(p *Properties, base structPointer) (n int) {
-    v := structPointer_RefString(base, p.field)
-    if v == nil {
-        return 0
-    }
-    x := *v
-    n += len(p.tagcode)
-    n += sizeStringBytes(x)
-    return
+	v := structPointer_RefString(base, p.field)
+	if v == nil {
+		return 0
+	}
+	x := *v
+	n += len(p.tagcode)
+	n += sizeStringBytes(x)
+	return
 }
 
 // Encode a reference to a message struct.
 func (o *Buffer) enc_ref_struct_message(p *Properties, base structPointer) error {
-    var state errorState
-    structp := structPointer_GetRefStructPointer(base, p.field)
-    if structPointer_IsNil(structp) {
-        return ErrNil
-    }
+	var state errorState
+	structp := structPointer_GetRefStructPointer(base, p.field)
+	if structPointer_IsNil(structp) {
+		return ErrNil
+	}
 
-    // Can the object marshal itself?
-    if p.isMarshaler {
-        m := structPointer_Interface(structp, p.stype).(Marshaler)
-        data, err := m.Marshal()
-        if err != nil && !state.shouldContinue(err, nil) {
-            return err
-        }
-        o.buf = append(o.buf, p.tagcode...)
-        o.EncodeRawBytes(data)
-        return nil
-    }
+	// Can the object marshal itself?
+	if p.isMarshaler {
+		m := structPointer_Interface(structp, p.stype).(Marshaler)
+		data, err := m.Marshal()
+		if err != nil && !state.shouldContinue(err, nil) {
+			return err
+		}
+		o.buf = append(o.buf, p.tagcode...)
+		o.EncodeRawBytes(data)
+		return nil
+	}
 
-    o.buf = append(o.buf, p.tagcode...)
-    return o.enc_len_struct(p.stype, p.sprop, structp, &state)
+	o.buf = append(o.buf, p.tagcode...)
+	return o.enc_len_struct(p.stype, p.sprop, structp, &state)
 }
 
 //TODO this is only copied, please fix this
 func size_ref_struct_message(p *Properties, base structPointer) int {
-    structp := structPointer_GetRefStructPointer(base, p.field)
-    if structPointer_IsNil(structp) {
-        return 0
-    }
+	structp := structPointer_GetRefStructPointer(base, p.field)
+	if structPointer_IsNil(structp) {
+		return 0
+	}
 
-    // Can the object marshal itself?
-    if p.isMarshaler {
-        m := structPointer_Interface(structp, p.stype).(Marshaler)
-        data, _ := m.Marshal()
-        n0 := len(p.tagcode)
-        n1 := sizeRawBytes(data)
-        return n0 + n1
-    }
+	// Can the object marshal itself?
+	if p.isMarshaler {
+		m := structPointer_Interface(structp, p.stype).(Marshaler)
+		data, _ := m.Marshal()
+		n0 := len(p.tagcode)
+		n1 := sizeRawBytes(data)
+		return n0 + n1
+	}
 
-    n0 := len(p.tagcode)
-    n1 := size_struct(p.stype, p.sprop, structp)
-    n2 := sizeVarint(uint64(n1)) // size of encoded length
-    return n0 + n1 + n2
+	n0 := len(p.tagcode)
+	n1 := size_struct(p.stype, p.sprop, structp)
+	n2 := sizeVarint(uint64(n1)) // size of encoded length
+	return n0 + n1 + n2
 }
 
 // Encode a slice of references to message struct pointers ([]struct).
 func (o *Buffer) enc_slice_ref_struct_message(p *Properties, base structPointer) error {
-    var state errorState
-    ss := structPointer_GetStructPointer(base, p.field)
-    ss1 := structPointer_GetRefStructPointer(ss, field(0))
-    size := p.stype.Size()
-    l := structPointer_Len(base, p.field)
-    for i := 0; i < l; i++ {
-        structp := structPointer_Add(ss1, field(uintptr(i)*size))
-        if structPointer_IsNil(structp) {
-            return ErrRepeatedHasNil
-        }
+	var state errorState
+	ss := structPointer_GetStructPointer(base, p.field)
+	ss1 := structPointer_GetRefStructPointer(ss, field(0))
+	size := p.stype.Size()
+	l := structPointer_Len(base, p.field)
+	for i := 0; i < l; i++ {
+		structp := structPointer_Add(ss1, field(uintptr(i)*size))
+		if structPointer_IsNil(structp) {
+			return ErrRepeatedHasNil
+		}
 
-        // Can the object marshal itself?
-        if p.isMarshaler {
-            m := structPointer_Interface(structp, p.stype).(Marshaler)
-            data, err := m.Marshal()
-            if err != nil && !state.shouldContinue(err, nil) {
-                return err
-            }
-            o.buf = append(o.buf, p.tagcode...)
-            o.EncodeRawBytes(data)
-            continue
-        }
+		// Can the object marshal itself?
+		if p.isMarshaler {
+			m := structPointer_Interface(structp, p.stype).(Marshaler)
+			data, err := m.Marshal()
+			if err != nil && !state.shouldContinue(err, nil) {
+				return err
+			}
+			o.buf = append(o.buf, p.tagcode...)
+			o.EncodeRawBytes(data)
+			continue
+		}
 
-        o.buf = append(o.buf, p.tagcode...)
-        err := o.enc_len_struct(p.stype, p.sprop, structp, &state)
-        if err != nil && !state.shouldContinue(err, nil) {
-            if err == ErrNil {
-                return ErrRepeatedHasNil
-            }
-            return err
-        }
+		o.buf = append(o.buf, p.tagcode...)
+		err := o.enc_len_struct(p.stype, p.sprop, structp, &state)
+		if err != nil && !state.shouldContinue(err, nil) {
+			if err == ErrNil {
+				return ErrRepeatedHasNil
+			}
+			return err
+		}
 
-    }
-    return state.err
+	}
+	return state.err
 }
 
 //TODO this is only copied, please fix this
 func size_slice_ref_struct_message(p *Properties, base structPointer) (n int) {
-    ss := structPointer_GetStructPointer(base, p.field)
-    ss1 := structPointer_GetRefStructPointer(ss, field(0))
-    size := p.stype.Size()
-    l := structPointer_Len(base, p.field)
-    n += l * len(p.tagcode)
-    for i := 0; i < l; i++ {
-        structp := structPointer_Add(ss1, field(uintptr(i)*size))
-        if structPointer_IsNil(structp) {
-            return // return the size up to this point
-        }
+	ss := structPointer_GetStructPointer(base, p.field)
+	ss1 := structPointer_GetRefStructPointer(ss, field(0))
+	size := p.stype.Size()
+	l := structPointer_Len(base, p.field)
+	n += l * len(p.tagcode)
+	for i := 0; i < l; i++ {
+		structp := structPointer_Add(ss1, field(uintptr(i)*size))
+		if structPointer_IsNil(structp) {
+			return // return the size up to this point
+		}
 
-        // Can the object marshal itself?
-        if p.isMarshaler {
-            m := structPointer_Interface(structp, p.stype).(Marshaler)
-            data, _ := m.Marshal()
-            n += len(p.tagcode)
-            n += sizeRawBytes(data)
-            continue
-        }
+		// Can the object marshal itself?
+		if p.isMarshaler {
+			m := structPointer_Interface(structp, p.stype).(Marshaler)
+			data, _ := m.Marshal()
+			n += len(p.tagcode)
+			n += sizeRawBytes(data)
+			continue
+		}
 
-        n0 := size_struct(p.stype, p.sprop, structp)
-        n1 := sizeVarint(uint64(n0)) // size of encoded length
-        n += n0 + n1
-    }
-    return
+		n0 := size_struct(p.stype, p.sprop, structp)
+		n1 := sizeVarint(uint64(n0)) // size of encoded length
+		n += n0 + n1
+	}
+	return
 }
 
 func (o *Buffer) enc_custom_bytes(p *Properties, base structPointer) error {
-    i := structPointer_InterfaceRef(base, p.field, p.ctype)
-    if i == nil {
-        return ErrNil
-    }
-    custom := i.(Marshaler)
-    data, err := custom.Marshal()
-    if err != nil {
-        return err
-    }
-    if data == nil {
-        return ErrNil
-    }
-    o.buf = append(o.buf, p.tagcode...)
-    o.EncodeRawBytes(data)
-    return nil
+	i := structPointer_InterfaceRef(base, p.field, p.ctype)
+	if i == nil {
+		return ErrNil
+	}
+	custom := i.(Marshaler)
+	data, err := custom.Marshal()
+	if err != nil {
+		return err
+	}
+	if data == nil {
+		return ErrNil
+	}
+	o.buf = append(o.buf, p.tagcode...)
+	o.EncodeRawBytes(data)
+	return nil
 }
 
 func size_custom_bytes(p *Properties, base structPointer) (n int) {
-    n += len(p.tagcode)
-    i := structPointer_InterfaceRef(base, p.field, p.ctype)
-    if i == nil {
-        return 0
-    }
-    custom := i.(Marshaler)
-    data, _ := custom.Marshal()
-    n += sizeRawBytes(data)
-    return
+	n += len(p.tagcode)
+	i := structPointer_InterfaceRef(base, p.field, p.ctype)
+	if i == nil {
+		return 0
+	}
+	custom := i.(Marshaler)
+	data, _ := custom.Marshal()
+	n += sizeRawBytes(data)
+	return
 }
 
 func (o *Buffer) enc_custom_ref_bytes(p *Properties, base structPointer) error {
-    custom := structPointer_InterfaceAt(base, p.field, p.ctype).(Marshaler)
-    data, err := custom.Marshal()
-    if err != nil {
-        return err
-    }
-    if data == nil {
-        return ErrNil
-    }
-    o.buf = append(o.buf, p.tagcode...)
-    o.EncodeRawBytes(data)
-    return nil
+	custom := structPointer_InterfaceAt(base, p.field, p.ctype).(Marshaler)
+	data, err := custom.Marshal()
+	if err != nil {
+		return err
+	}
+	if data == nil {
+		return ErrNil
+	}
+	o.buf = append(o.buf, p.tagcode...)
+	o.EncodeRawBytes(data)
+	return nil
 }
 
 func size_custom_ref_bytes(p *Properties, base structPointer) (n int) {
-    n += len(p.tagcode)
-    i := structPointer_InterfaceAt(base, p.field, p.ctype)
-    if i == nil {
-        return 0
-    }
-    custom := i.(Marshaler)
-    data, _ := custom.Marshal()
-    n += sizeRawBytes(data)
-    return
+	n += len(p.tagcode)
+	i := structPointer_InterfaceAt(base, p.field, p.ctype)
+	if i == nil {
+		return 0
+	}
+	custom := i.(Marshaler)
+	data, _ := custom.Marshal()
+	n += sizeRawBytes(data)
+	return
 }
 
 func (o *Buffer) enc_custom_slice_bytes(p *Properties, base structPointer) error {
-    inter := structPointer_InterfaceRef(base, p.field, p.ctype)
-    if inter == nil {
-        return ErrNil
-    }
-    slice := reflect.ValueOf(inter)
-    l := slice.Len()
-    for i := 0; i < l; i++ {
-        v := slice.Index(i)
-        custom := v.Interface().(Marshaler)
-        data, err := custom.Marshal()
-        if err != nil {
-            return err
-        }
-        o.buf = append(o.buf, p.tagcode...)
-        o.EncodeRawBytes(data)
-    }
-    return nil
+	inter := structPointer_InterfaceRef(base, p.field, p.ctype)
+	if inter == nil {
+		return ErrNil
+	}
+	slice := reflect.ValueOf(inter)
+	l := slice.Len()
+	for i := 0; i < l; i++ {
+		v := slice.Index(i)
+		custom := v.Interface().(Marshaler)
+		data, err := custom.Marshal()
+		if err != nil {
+			return err
+		}
+		o.buf = append(o.buf, p.tagcode...)
+		o.EncodeRawBytes(data)
+	}
+	return nil
 }
 
 func size_custom_slice_bytes(p *Properties, base structPointer) (n int) {
-    inter := structPointer_InterfaceRef(base, p.field, p.ctype)
-    if inter == nil {
-        return 0
-    }
-    slice := reflect.ValueOf(inter)
-    l := slice.Len()
-    n += l * len(p.tagcode)
-    for i := 0; i < l; i++ {
-        v := slice.Index(i)
-        custom := v.Interface().(Marshaler)
-        data, _ := custom.Marshal()
-        n += sizeRawBytes(data)
-    }
-    return
+	inter := structPointer_InterfaceRef(base, p.field, p.ctype)
+	if inter == nil {
+		return 0
+	}
+	slice := reflect.ValueOf(inter)
+	l := slice.Len()
+	n += l * len(p.tagcode)
+	for i := 0; i < l; i++ {
+		v := slice.Index(i)
+		custom := v.Interface().(Marshaler)
+		data, _ := custom.Marshal()
+		n += sizeRawBytes(data)
+	}
+	return
 }

@@ -29,109 +29,109 @@
 package io_test
 
 import (
-    "bytes"
-    "github.com/dropbox/goprotoc/io"
-    "github.com/dropbox/goprotoc/test"
-    "encoding/binary"
-    goio "io"
-    "math/rand"
-    "testing"
-    "time"
+	"bytes"
+	"encoding/binary"
+	"github.com/dropbox/goprotoc/io"
+	"github.com/dropbox/goprotoc/test"
+	goio "io"
+	"math/rand"
+	"testing"
+	"time"
 )
 
 func iotest(writer io.WriteCloser, reader io.ReadCloser) {
-    size := 1000
-    msgs := make([]*test.NinOptNative, size)
-    r := rand.New(rand.NewSource(time.Now().UnixNano()))
-    for i := range msgs {
-        msgs[i] = test.NewPopulatedNinOptNative(r, true)
-        err := writer.WriteMsg(msgs[i])
-        if err != nil {
-            panic(err)
-        }
-    }
-    if err := writer.Close(); err != nil {
-        panic(err)
-    }
-    i := 0
-    for {
-        msg := &test.NinOptNative{}
-        if err := reader.ReadMsg(msg); err != nil {
-            if err == goio.EOF {
-                break
-            }
-            panic(err)
-        }
-        if err := msg.VerboseEqual(msgs[i]); err != nil {
-            panic(err)
-        }
-        i++
-    }
-    if i != size {
-        panic("not enough messages read")
-    }
-    if err := reader.Close(); err != nil {
-        panic(err)
-    }
+	size := 1000
+	msgs := make([]*test.NinOptNative, size)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := range msgs {
+		msgs[i] = test.NewPopulatedNinOptNative(r, true)
+		err := writer.WriteMsg(msgs[i])
+		if err != nil {
+			panic(err)
+		}
+	}
+	if err := writer.Close(); err != nil {
+		panic(err)
+	}
+	i := 0
+	for {
+		msg := &test.NinOptNative{}
+		if err := reader.ReadMsg(msg); err != nil {
+			if err == goio.EOF {
+				break
+			}
+			panic(err)
+		}
+		if err := msg.VerboseEqual(msgs[i]); err != nil {
+			panic(err)
+		}
+		i++
+	}
+	if i != size {
+		panic("not enough messages read")
+	}
+	if err := reader.Close(); err != nil {
+		panic(err)
+	}
 }
 
 func TestBigUint32(t *testing.T) {
-    buf := bytes.NewBuffer(nil)
-    writer := io.NewUint32DelimitedWriter(buf, binary.BigEndian)
-    reader := io.NewUint32DelimitedReader(buf, binary.BigEndian, 1024*1024)
-    iotest(writer, reader)
+	buf := bytes.NewBuffer(nil)
+	writer := io.NewUint32DelimitedWriter(buf, binary.BigEndian)
+	reader := io.NewUint32DelimitedReader(buf, binary.BigEndian, 1024*1024)
+	iotest(writer, reader)
 }
 
 func TestLittleUint32(t *testing.T) {
-    buf := bytes.NewBuffer(nil)
-    writer := io.NewUint32DelimitedWriter(buf, binary.LittleEndian)
-    reader := io.NewUint32DelimitedReader(buf, binary.LittleEndian, 1024*1024)
-    iotest(writer, reader)
+	buf := bytes.NewBuffer(nil)
+	writer := io.NewUint32DelimitedWriter(buf, binary.LittleEndian)
+	reader := io.NewUint32DelimitedReader(buf, binary.LittleEndian, 1024*1024)
+	iotest(writer, reader)
 }
 
 func TestVarint(t *testing.T) {
-    buf := bytes.NewBuffer(nil)
-    writer := io.NewDelimitedWriter(buf)
-    reader := io.NewDelimitedReader(buf, 1024*1024)
-    iotest(writer, reader)
+	buf := bytes.NewBuffer(nil)
+	writer := io.NewDelimitedWriter(buf)
+	reader := io.NewDelimitedReader(buf, 1024*1024)
+	iotest(writer, reader)
 }
 
 func TestVarintError(t *testing.T) {
-    buf := bytes.NewBuffer(nil)
-    buf.Write([]byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f})
-    reader := io.NewDelimitedReader(buf, 1024*1024)
-    msg := &test.NinOptNative{}
-    err := reader.ReadMsg(msg)
-    if err == nil {
-        t.Fatalf("Expected error")
-    }
+	buf := bytes.NewBuffer(nil)
+	buf.Write([]byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x7f})
+	reader := io.NewDelimitedReader(buf, 1024*1024)
+	msg := &test.NinOptNative{}
+	err := reader.ReadMsg(msg)
+	if err == nil {
+		t.Fatalf("Expected error")
+	}
 }
 
 func TestFull(t *testing.T) {
-    buf := bytes.NewBuffer(nil)
-    writer := io.NewFullWriter(buf)
-    reader := io.NewFullReader(buf, 1024*1024)
-    r := rand.New(rand.NewSource(time.Now().UnixNano()))
-    msgIn := test.NewPopulatedNinOptNative(r, true)
-    if err := writer.WriteMsg(msgIn); err != nil {
-        panic(err)
-    }
-    if err := writer.Close(); err != nil {
-        panic(err)
-    }
-    msgOut := &test.NinOptNative{}
-    if err := reader.ReadMsg(msgOut); err != nil {
-        panic(err)
-    }
-    if err := msgIn.VerboseEqual(msgOut); err != nil {
-        panic(err)
-    }
-    if err := reader.ReadMsg(msgOut); err != nil {
-        if err != goio.EOF {
-            panic(err)
-        }
-    }
-    if err := reader.Close(); err != nil {
-        panic(err)
-    }
+	buf := bytes.NewBuffer(nil)
+	writer := io.NewFullWriter(buf)
+	reader := io.NewFullReader(buf, 1024*1024)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	msgIn := test.NewPopulatedNinOptNative(r, true)
+	if err := writer.WriteMsg(msgIn); err != nil {
+		panic(err)
+	}
+	if err := writer.Close(); err != nil {
+		panic(err)
+	}
+	msgOut := &test.NinOptNative{}
+	if err := reader.ReadMsg(msgOut); err != nil {
+		panic(err)
+	}
+	if err := msgIn.VerboseEqual(msgOut); err != nil {
+		panic(err)
+	}
+	if err := reader.ReadMsg(msgOut); err != nil {
+		if err != goio.EOF {
+			panic(err)
+		}
+	}
+	if err := reader.Close(); err != nil {
+		panic(err)
+	}
 }

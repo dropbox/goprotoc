@@ -106,51 +106,51 @@ just the like TestProto method which is used to test the NewAFromFace function.
 package face
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type plugin struct {
-    *generator.Generator
-    generator.PluginImports
+	*generator.Generator
+	generator.PluginImports
 }
 
 func NewPlugin() *plugin {
-    return &plugin{}
+	return &plugin{}
 }
 
 func (p *plugin) Name() string {
-    return "face"
+	return "face"
 }
 
 func (p *plugin) Init(g *generator.Generator) {
-    p.Generator = g
+	p.Generator = g
 }
 
 func (p *plugin) Generate(file *generator.FileDescriptor) {
-    p.PluginImports = generator.NewPluginImports(p.Generator)
-    protoPkg := p.NewImport("github.com/dropbox/goprotoc/proto")
-    for _, message := range file.Messages() {
-        if !gogoproto.IsFace(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
-        if message.DescriptorProto.HasExtension() {
-            panic("face does not support message with extensions")
-        }
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        p.P(`type `, ccTypeName, `Face interface{`)
-        p.In()
-        p.P(`Proto() `, protoPkg.Use(), `.Message`)
-        for _, field := range message.Field {
-            fieldname := p.GetFieldName(message, field)
-            goTyp, _ := p.GoType(message, field)
-            p.P(`Get`, fieldname, `() `, goTyp)
-        }
-        p.Out()
-        p.P(`}`)
-    }
+	p.PluginImports = generator.NewPluginImports(p.Generator)
+	protoPkg := p.NewImport("github.com/dropbox/goprotoc/proto")
+	for _, message := range file.Messages() {
+		if !gogoproto.IsFace(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
+		if message.DescriptorProto.HasExtension() {
+			panic("face does not support message with extensions")
+		}
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		p.P(`type `, ccTypeName, `Face interface{`)
+		p.In()
+		p.P(`Proto() `, protoPkg.Use(), `.Message`)
+		for _, field := range message.Field {
+			fieldname := p.GetFieldName(message, field)
+			goTyp, _ := p.GoType(message, field)
+			p.P(`Get`, fieldname, `() `, goTyp)
+		}
+		p.Out()
+		p.P(`}`)
+	}
 }
 
 func init() {
-    generator.RegisterPlugin(NewPlugin())
+	generator.RegisterPlugin(NewPlugin())
 }

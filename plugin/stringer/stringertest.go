@@ -27,52 +27,52 @@
 package stringer
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/plugin/testgen"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/plugin/testgen"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {
-    *generator.Generator
+	*generator.Generator
 }
 
 func NewTest(g *generator.Generator) testgen.TestPlugin {
-    return &test{g}
+	return &test{g}
 }
 
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
-    used := false
-    randPkg := imports.NewImport("math/rand")
-    timePkg := imports.NewImport("time")
-    testingPkg := imports.NewImport("testing")
-    fmtPkg := imports.NewImport("fmt")
-    for _, message := range file.Messages() {
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        if !gogoproto.IsStringer(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
+	used := false
+	randPkg := imports.NewImport("math/rand")
+	timePkg := imports.NewImport("time")
+	testingPkg := imports.NewImport("testing")
+	fmtPkg := imports.NewImport("fmt")
+	for _, message := range file.Messages() {
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		if !gogoproto.IsStringer(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
 
-        if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
-            used = true
-            p.P(`func Test`, ccTypeName, `Stringer(t *`, testingPkg.Use(), `.T) {`)
-            p.In()
-            p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
-            p.P(`p := NewPopulated`, ccTypeName, `(popr, false)`)
-            p.P(`s1 := p.String()`)
-            p.P(`s2 := `, fmtPkg.Use(), `.Sprintf("%v", p)`)
-            p.P(`if s1 != s2 {`)
-            p.In()
-            p.P(`t.Fatalf("String want %v got %v", s1, s2)`)
-            p.Out()
-            p.P(`}`)
-            p.Out()
-            p.P(`}`)
-        }
+		if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
+			used = true
+			p.P(`func Test`, ccTypeName, `Stringer(t *`, testingPkg.Use(), `.T) {`)
+			p.In()
+			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
+			p.P(`p := NewPopulated`, ccTypeName, `(popr, false)`)
+			p.P(`s1 := p.String()`)
+			p.P(`s2 := `, fmtPkg.Use(), `.Sprintf("%v", p)`)
+			p.P(`if s1 != s2 {`)
+			p.In()
+			p.P(`t.Fatalf("String want %v got %v", s1, s2)`)
+			p.Out()
+			p.P(`}`)
+			p.Out()
+			p.P(`}`)
+		}
 
-    }
-    return used
+	}
+	return used
 }
 
 func init() {
-    testgen.RegisterTestPlugin(NewTest)
+	testgen.RegisterTestPlugin(NewTest)
 }

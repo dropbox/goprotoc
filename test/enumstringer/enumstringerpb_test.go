@@ -34,356 +34,356 @@ import testing3 "testing"
 import dropbox_gogoprotobuf_proto2 "github.com/dropbox/goprotoc/proto"
 
 func TestNidOptEnumProto(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    p := NewPopulatedNidOptEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NidOptEnum{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    for i := range data {
-        data[i] = byte(popr.Intn(256))
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	p := NewPopulatedNidOptEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NidOptEnum{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNinOptEnumProto(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    p := NewPopulatedNinOptEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NinOptEnum{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    for i := range data {
-        data[i] = byte(popr.Intn(256))
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	p := NewPopulatedNinOptEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NinOptEnum{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNidRepEnumProto(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    p := NewPopulatedNidRepEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NidRepEnum{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    for i := range data {
-        data[i] = byte(popr.Intn(256))
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	p := NewPopulatedNidRepEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NidRepEnum{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNinRepEnumProto(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    p := NewPopulatedNinRepEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NinRepEnum{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    for i := range data {
-        data[i] = byte(popr.Intn(256))
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	p := NewPopulatedNinRepEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NinRepEnum{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	for i := range data {
+		data[i] = byte(popr.Intn(256))
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNidOptEnumJSON(t *testing1.T) {
-    popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
-    p := NewPopulatedNidOptEnum(popr, true)
-    jsondata, err := encoding_json.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NidOptEnum{}
-    err = encoding_json.Unmarshal(jsondata, msg)
-    if err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Json Equal %#v", msg, p)
-    }
+	popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
+	p := NewPopulatedNidOptEnum(popr, true)
+	jsondata, err := encoding_json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NidOptEnum{}
+	err = encoding_json.Unmarshal(jsondata, msg)
+	if err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Json Equal %#v", msg, p)
+	}
 }
 func TestNinOptEnumJSON(t *testing1.T) {
-    popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
-    p := NewPopulatedNinOptEnum(popr, true)
-    jsondata, err := encoding_json.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NinOptEnum{}
-    err = encoding_json.Unmarshal(jsondata, msg)
-    if err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Json Equal %#v", msg, p)
-    }
+	popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
+	p := NewPopulatedNinOptEnum(popr, true)
+	jsondata, err := encoding_json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NinOptEnum{}
+	err = encoding_json.Unmarshal(jsondata, msg)
+	if err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Json Equal %#v", msg, p)
+	}
 }
 func TestNidRepEnumJSON(t *testing1.T) {
-    popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
-    p := NewPopulatedNidRepEnum(popr, true)
-    jsondata, err := encoding_json.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NidRepEnum{}
-    err = encoding_json.Unmarshal(jsondata, msg)
-    if err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Json Equal %#v", msg, p)
-    }
+	popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
+	p := NewPopulatedNidRepEnum(popr, true)
+	jsondata, err := encoding_json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NidRepEnum{}
+	err = encoding_json.Unmarshal(jsondata, msg)
+	if err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Json Equal %#v", msg, p)
+	}
 }
 func TestNinRepEnumJSON(t *testing1.T) {
-    popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
-    p := NewPopulatedNinRepEnum(popr, true)
-    jsondata, err := encoding_json.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NinRepEnum{}
-    err = encoding_json.Unmarshal(jsondata, msg)
-    if err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Json Equal %#v", msg, p)
-    }
+	popr := math_rand1.New(math_rand1.NewSource(time1.Now().UnixNano()))
+	p := NewPopulatedNinRepEnum(popr, true)
+	jsondata, err := encoding_json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NinRepEnum{}
+	err = encoding_json.Unmarshal(jsondata, msg)
+	if err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Json Equal %#v", msg, p)
+	}
 }
 func TestNidOptEnumProtoText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNidOptEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
-    msg := &NidOptEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNidOptEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
+	msg := &NidOptEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNidOptEnumProtoCompactText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNidOptEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
-    msg := &NidOptEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNidOptEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
+	msg := &NidOptEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNinOptEnumProtoText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNinOptEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
-    msg := &NinOptEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNinOptEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
+	msg := &NinOptEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNinOptEnumProtoCompactText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNinOptEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
-    msg := &NinOptEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNinOptEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
+	msg := &NinOptEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNidRepEnumProtoText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNidRepEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
-    msg := &NidRepEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNidRepEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
+	msg := &NidRepEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNidRepEnumProtoCompactText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNidRepEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
-    msg := &NidRepEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNidRepEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
+	msg := &NidRepEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNinRepEnumProtoText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNinRepEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
-    msg := &NinRepEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNinRepEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.MarshalTextString(p)
+	msg := &NinRepEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNinRepEnumProtoCompactText(t *testing2.T) {
-    popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
-    p := NewPopulatedNinRepEnum(popr, true)
-    data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
-    msg := &NinRepEnum{}
-    if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
-    }
-    if !p.Equal(msg) {
-        t.Fatalf("%#v !Proto %#v", msg, p)
-    }
+	popr := math_rand2.New(math_rand2.NewSource(time2.Now().UnixNano()))
+	p := NewPopulatedNinRepEnum(popr, true)
+	data := dropbox_gogoprotobuf_proto1.CompactTextString(p)
+	msg := &NinRepEnum{}
+	if err := dropbox_gogoprotobuf_proto1.UnmarshalText(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", msg, p, err)
+	}
+	if !p.Equal(msg) {
+		t.Fatalf("%#v !Proto %#v", msg, p)
+	}
 }
 
 func TestNidOptEnumVerboseEqual(t *testing3.T) {
-    popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
-    p := NewPopulatedNidOptEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NidOptEnum{}
-    if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
-    }
+	popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
+	p := NewPopulatedNidOptEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NidOptEnum{}
+	if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
+	}
 }
 func TestNinOptEnumVerboseEqual(t *testing3.T) {
-    popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
-    p := NewPopulatedNinOptEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NinOptEnum{}
-    if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
-    }
+	popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
+	p := NewPopulatedNinOptEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NinOptEnum{}
+	if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
+	}
 }
 func TestNidRepEnumVerboseEqual(t *testing3.T) {
-    popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
-    p := NewPopulatedNidRepEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NidRepEnum{}
-    if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
-    }
+	popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
+	p := NewPopulatedNidRepEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NidRepEnum{}
+	if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
+	}
 }
 func TestNinRepEnumVerboseEqual(t *testing3.T) {
-    popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
-    p := NewPopulatedNinRepEnum(popr, false)
-    data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
-    if err != nil {
-        panic(err)
-    }
-    msg := &NinRepEnum{}
-    if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
-        panic(err)
-    }
-    if err := p.VerboseEqual(msg); err != nil {
-        t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
-    }
+	popr := math_rand3.New(math_rand3.NewSource(time3.Now().UnixNano()))
+	p := NewPopulatedNinRepEnum(popr, false)
+	data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	msg := &NinRepEnum{}
+	if err := dropbox_gogoprotobuf_proto2.Unmarshal(data, msg); err != nil {
+		panic(err)
+	}
+	if err := p.VerboseEqual(msg); err != nil {
+		t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)
+	}
 }
 
 //These tests are generated by code.google.com/p/gogoprotobuf/plugin/testgen

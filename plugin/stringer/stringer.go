@@ -91,103 +91,103 @@ not print their values, while the generated String method will always print all 
 package stringer
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
-    "strings"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"strings"
 )
 
 type stringer struct {
-    *generator.Generator
-    generator.PluginImports
-    atleastOne bool
-    localName  string
+	*generator.Generator
+	generator.PluginImports
+	atleastOne bool
+	localName  string
 }
 
 func NewStringer() *stringer {
-    return &stringer{}
+	return &stringer{}
 }
 
 func (p *stringer) Name() string {
-    return "stringer"
+	return "stringer"
 }
 
 func (p *stringer) Init(g *generator.Generator) {
-    p.Generator = g
+	p.Generator = g
 }
 
 func (p *stringer) Generate(file *generator.FileDescriptor) {
-    p.PluginImports = generator.NewPluginImports(p.Generator)
-    p.atleastOne = false
+	p.PluginImports = generator.NewPluginImports(p.Generator)
+	p.atleastOne = false
 
-    p.localName = generator.FileName(file)
+	p.localName = generator.FileName(file)
 
-    stringsPkg := p.NewImport("strings")
-    for _, message := range file.Messages() {
-        if !gogoproto.IsStringer(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
-        p.atleastOne = true
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        p.P(`func (this *`, ccTypeName, `) String() string {`)
-        p.In()
-        p.P(`if this == nil {`)
-        p.In()
-        p.P(`return "nil"`)
-        p.Out()
-        p.P(`}`)
-        p.P("s := ", stringsPkg.Use(), ".Join([]string{`&", ccTypeName, "{`,")
-        for _, field := range message.Field {
-            fieldname := p.GetFieldName(message, field)
-            if field.IsMessage() || p.IsGroup(field) {
-                desc := p.ObjectNamed(field.GetTypeName())
-                msgname := p.TypeName(desc)
-                msgnames := strings.Split(msgname, ".")
-                typeName := msgnames[len(msgnames)-1]
-                if field.IsRepeated() {
-                    p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, p.Pkg["fmt"],
-                        `.Sprintf("%v", this.`, fieldname, `[:this.`, generator.SizerName(fieldname),
-                        `]), "`, typeName, `","`, msgname, `"`, ", 1) + `,", "`,")
-                } else {
-                    fieldValue := "this.Get" + generator.CamelCase(fieldname) + "()"
-                    if gogoproto.IsCustomType(field) || gogoproto.IsEmbed(field) {
-                        fieldValue = "this." + fieldname
-                    }
-                    p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, p.Pkg["fmt"],
-                        `.Sprintf("%v", `, fieldValue, `), "`, typeName, `","`, msgname, `"`,
-                        ", 1) + `,", "`,")
-                }
-            } else if field.IsRepeated() {
-                p.P("`", fieldname, ":`", ` + `, p.Pkg["fmt"], `.Sprintf("%v", this.`, fieldname,
-                    "[:this.", generator.SizerName(fieldname), "]) + `,", "`,")
-            } else {
-                fieldValue := "this.Get" + generator.CamelCase(fieldname) + "()"
-                if gogoproto.IsCustomType(field) || gogoproto.IsEmbed(field) {
-                    fieldValue = "this." + fieldname
-                }
-                p.P("`", fieldname, ":`", ` + `, p.Pkg["fmt"], `.Sprintf("%v", `, fieldValue, ") + `,", "`,")
-            }
-        }
-        if message.DescriptorProto.HasExtension() {
-            if gogoproto.HasExtensionsMap(file.FileDescriptorProto, message.DescriptorProto) {
-                p.P("`XXX_extensions:` + proto.StringFromExtensionsMap(this.XXX_extensions) + `,`,")
-            } else {
-                p.P("`XXX_extensions:` + proto.StringFromExtensionsBytes(this.XXX_extensions) + `,`,")
-            }
-        }
-        p.P("`XXX_unrecognized:` + ", p.Pkg["fmt"], `.Sprintf("%v", this.XXX_unrecognized) + `, "`,`,")
-        p.P("`}`,")
-        p.P(`}`, `,""`, ")")
-        p.P(`return s`)
-        p.Out()
-        p.P(`}`)
-    }
+	stringsPkg := p.NewImport("strings")
+	for _, message := range file.Messages() {
+		if !gogoproto.IsStringer(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
+		p.atleastOne = true
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		p.P(`func (this *`, ccTypeName, `) String() string {`)
+		p.In()
+		p.P(`if this == nil {`)
+		p.In()
+		p.P(`return "nil"`)
+		p.Out()
+		p.P(`}`)
+		p.P("s := ", stringsPkg.Use(), ".Join([]string{`&", ccTypeName, "{`,")
+		for _, field := range message.Field {
+			fieldname := p.GetFieldName(message, field)
+			if field.IsMessage() || p.IsGroup(field) {
+				desc := p.ObjectNamed(field.GetTypeName())
+				msgname := p.TypeName(desc)
+				msgnames := strings.Split(msgname, ".")
+				typeName := msgnames[len(msgnames)-1]
+				if field.IsRepeated() {
+					p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, p.Pkg["fmt"],
+						`.Sprintf("%v", this.`, fieldname, `[:this.`, generator.SizerName(fieldname),
+						`]), "`, typeName, `","`, msgname, `"`, ", 1) + `,", "`,")
+				} else {
+					fieldValue := "this.Get" + generator.CamelCase(fieldname) + "()"
+					if gogoproto.IsCustomType(field) || gogoproto.IsEmbed(field) {
+						fieldValue = "this." + fieldname
+					}
+					p.P("`", fieldname, ":`", ` + `, stringsPkg.Use(), `.Replace(`, p.Pkg["fmt"],
+						`.Sprintf("%v", `, fieldValue, `), "`, typeName, `","`, msgname, `"`,
+						", 1) + `,", "`,")
+				}
+			} else if field.IsRepeated() {
+				p.P("`", fieldname, ":`", ` + `, p.Pkg["fmt"], `.Sprintf("%v", this.`, fieldname,
+					"[:this.", generator.SizerName(fieldname), "]) + `,", "`,")
+			} else {
+				fieldValue := "this.Get" + generator.CamelCase(fieldname) + "()"
+				if gogoproto.IsCustomType(field) || gogoproto.IsEmbed(field) {
+					fieldValue = "this." + fieldname
+				}
+				p.P("`", fieldname, ":`", ` + `, p.Pkg["fmt"], `.Sprintf("%v", `, fieldValue, ") + `,", "`,")
+			}
+		}
+		if message.DescriptorProto.HasExtension() {
+			if gogoproto.HasExtensionsMap(file.FileDescriptorProto, message.DescriptorProto) {
+				p.P("`XXX_extensions:` + proto.StringFromExtensionsMap(this.XXX_extensions) + `,`,")
+			} else {
+				p.P("`XXX_extensions:` + proto.StringFromExtensionsBytes(this.XXX_extensions) + `,`,")
+			}
+		}
+		p.P("`XXX_unrecognized:` + ", p.Pkg["fmt"], `.Sprintf("%v", this.XXX_unrecognized) + `, "`,`,")
+		p.P("`}`,")
+		p.P(`}`, `,""`, ")")
+		p.P(`return s`)
+		p.Out()
+		p.P(`}`)
+	}
 
-    if !p.atleastOne {
-        return
-    }
+	if !p.atleastOne {
+		return
+	}
 
 }
 
 func init() {
-    generator.RegisterPlugin(NewStringer())
+	generator.RegisterPlugin(NewStringer())
 }

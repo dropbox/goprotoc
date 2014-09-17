@@ -29,68 +29,68 @@
 package io
 
 import (
-    "github.com/dropbox/goprotoc/proto"
-    "io"
+	"github.com/dropbox/goprotoc/proto"
+	"io"
 )
 
 func NewFullWriter(w io.Writer) WriteCloser {
-    return &fullWriter{w, nil}
+	return &fullWriter{w, nil}
 }
 
 type fullWriter struct {
-    w      io.Writer
-    buffer []byte
+	w      io.Writer
+	buffer []byte
 }
 
 func (this *fullWriter) WriteMsg(msg proto.Message) (err error) {
-    var data []byte
-    if m, ok := msg.(marshaler); ok {
-        n := m.Size()
-        if n >= len(this.buffer) {
-            this.buffer = make([]byte, n)
-        }
-        _, err = m.MarshalTo(this.buffer)
-        if err != nil {
-            return err
-        }
-        data = this.buffer[:n]
-    } else {
-        data, err = proto.Marshal(msg)
-        if err != nil {
-            return err
-        }
-    }
-    _, err = this.w.Write(data)
-    return err
+	var data []byte
+	if m, ok := msg.(marshaler); ok {
+		n := m.Size()
+		if n >= len(this.buffer) {
+			this.buffer = make([]byte, n)
+		}
+		_, err = m.MarshalTo(this.buffer)
+		if err != nil {
+			return err
+		}
+		data = this.buffer[:n]
+	} else {
+		data, err = proto.Marshal(msg)
+		if err != nil {
+			return err
+		}
+	}
+	_, err = this.w.Write(data)
+	return err
 }
 
 func (this *fullWriter) Close() error {
-    if closer, ok := this.w.(io.Closer); ok {
-        return closer.Close()
-    }
-    return nil
+	if closer, ok := this.w.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }
 
 type fullReader struct {
-    r   io.Reader
-    buf []byte
+	r   io.Reader
+	buf []byte
 }
 
 func NewFullReader(r io.Reader, maxSize int) ReadCloser {
-    return &fullReader{r, make([]byte, maxSize)}
+	return &fullReader{r, make([]byte, maxSize)}
 }
 
 func (this *fullReader) ReadMsg(msg proto.Message) error {
-    length, err := this.r.Read(this.buf)
-    if err != nil {
-        return err
-    }
-    return proto.Unmarshal(this.buf[:length], msg)
+	length, err := this.r.Read(this.buf)
+	if err != nil {
+		return err
+	}
+	return proto.Unmarshal(this.buf[:length], msg)
 }
 
 func (this *fullReader) Close() error {
-    if closer, ok := this.r.(io.Closer); ok {
-        return closer.Close()
-    }
-    return nil
+	if closer, ok := this.r.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }

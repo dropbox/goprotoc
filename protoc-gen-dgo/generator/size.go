@@ -108,45 +108,45 @@ The sovExample function is a size of varint function for the example.pb.go file.
 package generator
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/proto"
-    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
-    "fmt"
-    "strconv"
+	"fmt"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/proto"
+	descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+	"strconv"
 )
 
 func wireToType(wire string) int {
-    switch wire {
-    case "fixed64":
-        return proto.WireFixed64
-    case "fixed32":
-        return proto.WireFixed32
-    case "varint":
-        return proto.WireVarint
-    case "bytes":
-        return proto.WireBytes
-    case "group":
-        return proto.WireBytes
-    case "zigzag32":
-        return proto.WireVarint
-    case "zigzag64":
-        return proto.WireVarint
-    }
-    panic("unreachable")
+	switch wire {
+	case "fixed64":
+		return proto.WireFixed64
+	case "fixed32":
+		return proto.WireFixed32
+	case "varint":
+		return proto.WireVarint
+	case "bytes":
+		return proto.WireBytes
+	case "group":
+		return proto.WireBytes
+	case "zigzag32":
+		return proto.WireVarint
+	case "zigzag64":
+		return proto.WireVarint
+	}
+	panic("unreachable")
 }
 
 func keySize(fieldNumber int32, wireType int) int {
-    x := uint32(fieldNumber)<<3 | uint32(wireType)
-    size := 0
-    for size = 0; x > 127; size++ {
-        x >>= 7
-    }
-    size++
-    return size
+	x := uint32(fieldNumber)<<3 | uint32(wireType)
+	size := 0
+	for size = 0; x > 127; size++ {
+		x >>= 7
+	}
+	size++
+	return size
 }
 
 func (g *Generator) sizeVarint() {
-    g.P(`
+	g.P(`
 	func sov`, g.localName, `(x uint64) (n int) {
 		for {
 			n++
@@ -160,218 +160,218 @@ func (g *Generator) sizeVarint() {
 }
 
 func (g *Generator) sizeZigZag() {
-    g.P(`func soz`, g.localName, `(x uint64) (n int) {
+	g.P(`func soz`, g.localName, `(x uint64) (n int) {
  		return sov`, g.localName, `(uint64((x << 1) ^ uint64((int64(x) >> 63)))) 	
 	}`)
 }
 
 func (g *Generator) generateSize(file *FileDescriptor) {
-    for _, message := range file.Messages() {
-        ccTypeName := CamelCaseSlice(message.TypeName())
-        g.P(`func (m *`, ccTypeName, `) Size() (n int) {`)
-        g.In()
-        g.P(`var l int`)
-        g.P(`_ = l`)
-        for _, field := range message.Field {
-            fieldname := g.GetFieldName(message, field)
-            repeated := field.IsRepeated()
-            sizerName := ""
-            if repeated {
-                sizerName = SizerName(fieldname)
-                g.P(`if m.`, sizerName, ` > 0 {`)
-                g.In()
-            } else {
-                g.P(`if m.`, SetterName(fieldname), ` {`)
-                g.In()
-            }
-            packed := field.IsPacked()
-            _, wire := g.GoType(message, field)
-            wireType := wireToType(wire)
-            fieldNumber := field.GetNumber()
-            if packed {
-                wireType = proto.WireBytes
-            }
-            key := keySize(fieldNumber, wireType)
-            switch *field.Type {
-            case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
-                descriptor.FieldDescriptorProto_TYPE_FIXED64,
-                descriptor.FieldDescriptorProto_TYPE_SFIXED64:
-                if packed {
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`, sizerName,
-                        `*8))`, `+m.`, sizerName, `*8`)
-                } else if repeated {
-                    g.P(`n+=`, strconv.Itoa(key+8), `*m.`, sizerName)
-                } else {
-                    g.P(`n+=`, strconv.Itoa(key+8))
-                }
-            case descriptor.FieldDescriptorProto_TYPE_FLOAT,
-                descriptor.FieldDescriptorProto_TYPE_FIXED32,
-                descriptor.FieldDescriptorProto_TYPE_SFIXED32:
-                if packed {
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`,
-                        sizerName, `*4))`, `+m.`, sizerName, `*4`)
-                } else if repeated {
-                    g.P(`n+=`, strconv.Itoa(key+4), `*m.`, sizerName, ``)
-                } else {
-                    g.P(`n+=`, strconv.Itoa(key+4))
-                }
-            case descriptor.FieldDescriptorProto_TYPE_INT64,
-                descriptor.FieldDescriptorProto_TYPE_UINT64,
-                descriptor.FieldDescriptorProto_TYPE_UINT32,
-                descriptor.FieldDescriptorProto_TYPE_ENUM:
-                if packed {
-                    g.P(`l = 0`)
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`l+=sov`, g.localName, `(uint64(e))`)
-                    g.Out()
-                    g.P(`}`)
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(l))+l`)
-                } else if repeated {
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(e))`)
-                    g.Out()
-                    g.P(`}`)
-                } else {
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`, fieldname, `))`)
-                }
-            case descriptor.FieldDescriptorProto_TYPE_INT32:
-                if packed {
-                    g.P(`l = 0`)
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`l+=sov`, g.localName, `(uint64(uint32(e)))`)
-                    g.Out()
-                    g.P(`}`)
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(l))+l`)
-                } else if repeated {
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(uint32(e)))`)
-                    g.Out()
-                    g.P(`}`)
-                } else {
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(uint32(m.`, fieldname, `)))`)
-                }
-            case descriptor.FieldDescriptorProto_TYPE_BOOL:
-                if packed {
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`,
-                        sizerName, `))`, `+m.`, sizerName, `*1`)
-                } else if repeated {
-                    g.P(`n+=`, strconv.Itoa(key+1), `*m.`, sizerName, ``)
-                } else {
-                    g.P(`n+=`, strconv.Itoa(key+1))
-                }
-            case descriptor.FieldDescriptorProto_TYPE_STRING:
-                if repeated {
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`s := m.`, fieldname, `[i]`)
-                    g.P(`l = len(s)`)
-                    g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                    g.Out()
-                    g.P(`}`)
-                } else {
-                    g.P(`l=len(m.`, fieldname, `)`)
-                    g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                }
-            case descriptor.FieldDescriptorProto_TYPE_GROUP:
-                panic(fmt.Errorf("size does not support group %v", fieldname))
-            case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-                if repeated {
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`l=e.Size()`)
-                    g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                    g.Out()
-                    g.P(`}`)
-                } else {
-                    g.P(`l=m.`, fieldname, `.Size()`)
-                    g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                }
-            case descriptor.FieldDescriptorProto_TYPE_BYTES:
-                if !gogoproto.IsCustomType(field) {
-                    if repeated {
-                        g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                        g.In()
-                        g.P(`b := m.`, fieldname, `[i]`)
-                        g.P(`l = len(b)`)
-                        g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                        g.Out()
-                        g.P(`}`)
-                    } else {
-                        g.P(`l=len(m.`, fieldname, `)`)
-                        g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                    }
-                } else {
-                    if repeated {
-                        g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                        g.In()
-                        g.P(`e := m.`, fieldname, `[i]`)
-                        g.P(`l=e.Size()`)
-                        g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                        g.Out()
-                        g.P(`}`)
-                    } else {
-                        g.P(`l=m.`, fieldname, `.Size()`)
-                        g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-                    }
-                }
-            case descriptor.FieldDescriptorProto_TYPE_SINT32,
-                descriptor.FieldDescriptorProto_TYPE_SINT64:
-                if packed {
-                    g.P(`l = 0`)
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`l+=soz`, g.localName, `(uint64(e))`)
-                    g.Out()
-                    g.P(`}`)
-                    g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(l))+l`)
-                } else if repeated {
-                    g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-                    g.In()
-                    g.P(`e := m.`, fieldname, `[i]`)
-                    g.P(`n+=`, strconv.Itoa(key), `+soz`, g.localName, `(uint64(e))`)
-                    g.Out()
-                    g.P(`}`)
-                } else {
-                    g.P(`n+=`, strconv.Itoa(key), `+soz`, g.localName, `(uint64(m.`, fieldname, `))`)
-                }
-            default:
-                panic("not implemented")
-            }
-            g.Out()
-            g.P(`}`)
-        }
-        if message.DescriptorProto.HasExtension() {
-            g.P(`if m.XXX_extensions != nil {`)
-            g.In()
-            if gogoproto.HasExtensionsMap(file.FileDescriptorProto, message.DescriptorProto) {
-                g.P(`n += `, g.Pkg["proto"], `.SizeOfExtensionMap(m.XXX_extensions)`)
-            } else {
-                g.P(`n+=len(m.XXX_extensions)`)
-            }
-            g.Out()
-            g.P(`}`)
-        }
-        g.P(`if m.XXX_unrecognized != nil {`)
-        g.In()
-        g.P(`n+=len(m.XXX_unrecognized)`)
-        g.Out()
-        g.P(`}`)
-        g.P(`m.xxx_sizeCached = n`)
-        g.P(`return n`)
-        g.Out()
-        g.P(`}`)
-    }
+	for _, message := range file.Messages() {
+		ccTypeName := CamelCaseSlice(message.TypeName())
+		g.P(`func (m *`, ccTypeName, `) Size() (n int) {`)
+		g.In()
+		g.P(`var l int`)
+		g.P(`_ = l`)
+		for _, field := range message.Field {
+			fieldname := g.GetFieldName(message, field)
+			repeated := field.IsRepeated()
+			sizerName := ""
+			if repeated {
+				sizerName = SizerName(fieldname)
+				g.P(`if m.`, sizerName, ` > 0 {`)
+				g.In()
+			} else {
+				g.P(`if m.`, SetterName(fieldname), ` {`)
+				g.In()
+			}
+			packed := field.IsPacked()
+			_, wire := g.GoType(message, field)
+			wireType := wireToType(wire)
+			fieldNumber := field.GetNumber()
+			if packed {
+				wireType = proto.WireBytes
+			}
+			key := keySize(fieldNumber, wireType)
+			switch *field.Type {
+			case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
+				descriptor.FieldDescriptorProto_TYPE_FIXED64,
+				descriptor.FieldDescriptorProto_TYPE_SFIXED64:
+				if packed {
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`, sizerName,
+						`*8))`, `+m.`, sizerName, `*8`)
+				} else if repeated {
+					g.P(`n+=`, strconv.Itoa(key+8), `*m.`, sizerName)
+				} else {
+					g.P(`n+=`, strconv.Itoa(key+8))
+				}
+			case descriptor.FieldDescriptorProto_TYPE_FLOAT,
+				descriptor.FieldDescriptorProto_TYPE_FIXED32,
+				descriptor.FieldDescriptorProto_TYPE_SFIXED32:
+				if packed {
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`,
+						sizerName, `*4))`, `+m.`, sizerName, `*4`)
+				} else if repeated {
+					g.P(`n+=`, strconv.Itoa(key+4), `*m.`, sizerName, ``)
+				} else {
+					g.P(`n+=`, strconv.Itoa(key+4))
+				}
+			case descriptor.FieldDescriptorProto_TYPE_INT64,
+				descriptor.FieldDescriptorProto_TYPE_UINT64,
+				descriptor.FieldDescriptorProto_TYPE_UINT32,
+				descriptor.FieldDescriptorProto_TYPE_ENUM:
+				if packed {
+					g.P(`l = 0`)
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`l+=sov`, g.localName, `(uint64(e))`)
+					g.Out()
+					g.P(`}`)
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(l))+l`)
+				} else if repeated {
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(e))`)
+					g.Out()
+					g.P(`}`)
+				} else {
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`, fieldname, `))`)
+				}
+			case descriptor.FieldDescriptorProto_TYPE_INT32:
+				if packed {
+					g.P(`l = 0`)
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`l+=sov`, g.localName, `(uint64(uint32(e)))`)
+					g.Out()
+					g.P(`}`)
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(l))+l`)
+				} else if repeated {
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(uint32(e)))`)
+					g.Out()
+					g.P(`}`)
+				} else {
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(uint32(m.`, fieldname, `)))`)
+				}
+			case descriptor.FieldDescriptorProto_TYPE_BOOL:
+				if packed {
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(m.`,
+						sizerName, `))`, `+m.`, sizerName, `*1`)
+				} else if repeated {
+					g.P(`n+=`, strconv.Itoa(key+1), `*m.`, sizerName, ``)
+				} else {
+					g.P(`n+=`, strconv.Itoa(key+1))
+				}
+			case descriptor.FieldDescriptorProto_TYPE_STRING:
+				if repeated {
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`s := m.`, fieldname, `[i]`)
+					g.P(`l = len(s)`)
+					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+					g.Out()
+					g.P(`}`)
+				} else {
+					g.P(`l=len(m.`, fieldname, `)`)
+					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+				}
+			case descriptor.FieldDescriptorProto_TYPE_GROUP:
+				panic(fmt.Errorf("size does not support group %v", fieldname))
+			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+				if repeated {
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`l=e.Size()`)
+					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+					g.Out()
+					g.P(`}`)
+				} else {
+					g.P(`l=m.`, fieldname, `.Size()`)
+					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+				}
+			case descriptor.FieldDescriptorProto_TYPE_BYTES:
+				if !gogoproto.IsCustomType(field) {
+					if repeated {
+						g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+						g.In()
+						g.P(`b := m.`, fieldname, `[i]`)
+						g.P(`l = len(b)`)
+						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+						g.Out()
+						g.P(`}`)
+					} else {
+						g.P(`l=len(m.`, fieldname, `)`)
+						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+					}
+				} else {
+					if repeated {
+						g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+						g.In()
+						g.P(`e := m.`, fieldname, `[i]`)
+						g.P(`l=e.Size()`)
+						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+						g.Out()
+						g.P(`}`)
+					} else {
+						g.P(`l=m.`, fieldname, `.Size()`)
+						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+					}
+				}
+			case descriptor.FieldDescriptorProto_TYPE_SINT32,
+				descriptor.FieldDescriptorProto_TYPE_SINT64:
+				if packed {
+					g.P(`l = 0`)
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`l+=soz`, g.localName, `(uint64(e))`)
+					g.Out()
+					g.P(`}`)
+					g.P(`n+=`, strconv.Itoa(key), `+sov`, g.localName, `(uint64(l))+l`)
+				} else if repeated {
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`e := m.`, fieldname, `[i]`)
+					g.P(`n+=`, strconv.Itoa(key), `+soz`, g.localName, `(uint64(e))`)
+					g.Out()
+					g.P(`}`)
+				} else {
+					g.P(`n+=`, strconv.Itoa(key), `+soz`, g.localName, `(uint64(m.`, fieldname, `))`)
+				}
+			default:
+				panic("not implemented")
+			}
+			g.Out()
+			g.P(`}`)
+		}
+		if message.DescriptorProto.HasExtension() {
+			g.P(`if m.XXX_extensions != nil {`)
+			g.In()
+			if gogoproto.HasExtensionsMap(file.FileDescriptorProto, message.DescriptorProto) {
+				g.P(`n += `, g.Pkg["proto"], `.SizeOfExtensionMap(m.XXX_extensions)`)
+			} else {
+				g.P(`n+=len(m.XXX_extensions)`)
+			}
+			g.Out()
+			g.P(`}`)
+		}
+		g.P(`if m.XXX_unrecognized != nil {`)
+		g.In()
+		g.P(`n+=len(m.XXX_unrecognized)`)
+		g.Out()
+		g.P(`}`)
+		g.P(`m.xxx_sizeCached = n`)
+		g.P(`return n`)
+		g.Out()
+		g.P(`}`)
+	}
 
-    g.sizeVarint()
-    g.sizeZigZag()
+	g.sizeVarint()
+	g.sizeZigZag()
 }

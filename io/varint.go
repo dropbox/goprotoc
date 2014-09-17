@@ -29,99 +29,99 @@
 package io
 
 import (
-    "github.com/dropbox/goprotoc/proto"
-    "encoding/binary"
-    "godropbox/errors"
-    "io"
+	"encoding/binary"
+	"github.com/dropbox/goprotoc/proto"
+	"godropbox/errors"
+	"io"
 )
 
 var (
-    errSmallBuffer = errors.New("Buffer Too Small")
-    errLargeValue  = errors.New("Value is Larger than 64 bits")
+	errSmallBuffer = errors.New("Buffer Too Small")
+	errLargeValue  = errors.New("Value is Larger than 64 bits")
 )
 
 func NewDelimitedWriter(w io.Writer) WriteCloser {
-    return &varintWriter{w, make([]byte, 10), nil}
+	return &varintWriter{w, make([]byte, 10), nil}
 }
 
 type varintWriter struct {
-    w      io.Writer
-    lenBuf []byte
-    buffer []byte
+	w      io.Writer
+	lenBuf []byte
+	buffer []byte
 }
 
 func (this *varintWriter) WriteMsg(msg proto.Message) (err error) {
-    var data []byte
-    if m, ok := msg.(marshaler); ok {
-        n := m.Size()
-        if n >= len(this.buffer) {
-            this.buffer = make([]byte, n)
-        }
-        _, err = m.MarshalTo(this.buffer)
-        if err != nil {
-            return err
-        }
-        data = this.buffer[:n]
-    } else {
-        data, err = proto.Marshal(msg)
-        if err != nil {
-            return err
-        }
-    }
-    length := uint64(len(data))
-    n := binary.PutUvarint(this.lenBuf, length)
-    _, err = this.w.Write(this.lenBuf[:n])
-    if err != nil {
-        return err
-    }
-    _, err = this.w.Write(data)
-    return err
+	var data []byte
+	if m, ok := msg.(marshaler); ok {
+		n := m.Size()
+		if n >= len(this.buffer) {
+			this.buffer = make([]byte, n)
+		}
+		_, err = m.MarshalTo(this.buffer)
+		if err != nil {
+			return err
+		}
+		data = this.buffer[:n]
+	} else {
+		data, err = proto.Marshal(msg)
+		if err != nil {
+			return err
+		}
+	}
+	length := uint64(len(data))
+	n := binary.PutUvarint(this.lenBuf, length)
+	_, err = this.w.Write(this.lenBuf[:n])
+	if err != nil {
+		return err
+	}
+	_, err = this.w.Write(data)
+	return err
 }
 
 func (this *varintWriter) Close() error {
-    if closer, ok := this.w.(io.Closer); ok {
-        return closer.Close()
-    }
-    return nil
+	if closer, ok := this.w.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }
 
 func NewDelimitedReader(r io.Reader, maxSize int) ReadCloser {
-    return &varintReader{r, make([]byte, 10), nil, maxSize}
+	return &varintReader{r, make([]byte, 10), nil, maxSize}
 }
 
 type varintReader struct {
-    r       io.Reader
-    lenBuf  []byte
-    buf     []byte
-    maxSize int
+	r       io.Reader
+	lenBuf  []byte
+	buf     []byte
+	maxSize int
 }
 
 func (this *varintReader) ReadMsg(msg proto.Message) error {
-    firstLen, err := this.r.Read(this.lenBuf)
-    if err != nil {
-        return err
-    }
-    length64, lenLen := binary.Uvarint(this.lenBuf)
-    if lenLen <= 0 {
-        if lenLen == 0 {
-            return errSmallBuffer
-        }
-        return errLargeValue
-    }
-    msgLen := int(length64)
-    if len(this.buf) < msgLen {
-        this.buf = make([]byte, msgLen)
-    }
-    prefixN := copy(this.buf, this.lenBuf[lenLen:firstLen])
-    if _, err := io.ReadFull(this.r, this.buf[prefixN:msgLen]); err != nil {
-        return err
-    }
-    return proto.Unmarshal(this.buf[:msgLen], msg)
+	firstLen, err := this.r.Read(this.lenBuf)
+	if err != nil {
+		return err
+	}
+	length64, lenLen := binary.Uvarint(this.lenBuf)
+	if lenLen <= 0 {
+		if lenLen == 0 {
+			return errSmallBuffer
+		}
+		return errLargeValue
+	}
+	msgLen := int(length64)
+	if len(this.buf) < msgLen {
+		this.buf = make([]byte, msgLen)
+	}
+	prefixN := copy(this.buf, this.lenBuf[lenLen:firstLen])
+	if _, err := io.ReadFull(this.r, this.buf[prefixN:msgLen]); err != nil {
+		return err
+	}
+	return proto.Unmarshal(this.buf[:msgLen], msg)
 }
 
 func (this *varintReader) Close() error {
-    if closer, ok := this.r.(io.Closer); ok {
-        return closer.Close()
-    }
-    return nil
+	if closer, ok := this.r.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }

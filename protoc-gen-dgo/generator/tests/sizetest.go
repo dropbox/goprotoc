@@ -27,94 +27,94 @@
 package size
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/plugin/testgen"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/plugin/testgen"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {
-    *generator.Generator
+	*generator.Generator
 }
 
 func NewTest(g *generator.Generator) testgen.TestPlugin {
-    return &test{g}
+	return &test{g}
 }
 
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
-    used := false
-    randPkg := imports.NewImport("math/rand")
-    timePkg := imports.NewImport("time")
-    testingPkg := imports.NewImport("testing")
-    protoPkg := imports.NewImport("github.com/dropbox/goprotoc/proto")
-    for _, message := range file.Messages() {
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        if !gogoproto.IsSizer(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
+	used := false
+	randPkg := imports.NewImport("math/rand")
+	timePkg := imports.NewImport("time")
+	testingPkg := imports.NewImport("testing")
+	protoPkg := imports.NewImport("github.com/dropbox/goprotoc/proto")
+	for _, message := range file.Messages() {
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		if !gogoproto.IsSizer(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
 
-        if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
-            used = true
-            p.P(`func Test`, ccTypeName, `Size(t *`, testingPkg.Use(), `.T) {`)
-            p.In()
-            p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
-            p.P(`p := NewPopulated`, ccTypeName, `(popr, true)`)
-            p.P(`size2 := `, protoPkg.Use(), `.Size(p)`)
-            p.P(`data, err := `, protoPkg.Use(), `.Marshal(p)`)
-            p.P(`if err != nil {`)
-            p.In()
-            p.P(`panic(err)`)
-            p.Out()
-            p.P(`}`)
-            p.P(`size := p.Size()`)
-            p.P(`if len(data) != size {`)
-            p.In()
-            p.P(`t.Fatalf("size %v != marshalled size %v", size, len(data))`)
-            p.Out()
-            p.P(`}`)
-            p.P(`if size2 != size {`)
-            p.In()
-            p.P(`t.Fatalf("size %v != before marshal proto.Size %v", size, size2)`)
-            p.Out()
-            p.P(`}`)
-            p.P(`size3 := `, protoPkg.Use(), `.Size(p)`)
-            p.P(`if size3 != size {`)
-            p.In()
-            p.P(`t.Fatalf("size %v != after marshal proto.Size %v", size, size3)`)
-            p.Out()
-            p.P(`}`)
-            p.Out()
-            p.P(`}`)
-            p.P()
-        }
+		if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
+			used = true
+			p.P(`func Test`, ccTypeName, `Size(t *`, testingPkg.Use(), `.T) {`)
+			p.In()
+			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
+			p.P(`p := NewPopulated`, ccTypeName, `(popr, true)`)
+			p.P(`size2 := `, protoPkg.Use(), `.Size(p)`)
+			p.P(`data, err := `, protoPkg.Use(), `.Marshal(p)`)
+			p.P(`if err != nil {`)
+			p.In()
+			p.P(`panic(err)`)
+			p.Out()
+			p.P(`}`)
+			p.P(`size := p.Size()`)
+			p.P(`if len(data) != size {`)
+			p.In()
+			p.P(`t.Fatalf("size %v != marshalled size %v", size, len(data))`)
+			p.Out()
+			p.P(`}`)
+			p.P(`if size2 != size {`)
+			p.In()
+			p.P(`t.Fatalf("size %v != before marshal proto.Size %v", size, size2)`)
+			p.Out()
+			p.P(`}`)
+			p.P(`size3 := `, protoPkg.Use(), `.Size(p)`)
+			p.P(`if size3 != size {`)
+			p.In()
+			p.P(`t.Fatalf("size %v != after marshal proto.Size %v", size, size3)`)
+			p.Out()
+			p.P(`}`)
+			p.Out()
+			p.P(`}`)
+			p.P()
+		}
 
-        if gogoproto.HasBenchGen(file.FileDescriptorProto, message.DescriptorProto) {
-            used = true
-            p.P(`func Benchmark`, ccTypeName, `Size(b *`, testingPkg.Use(), `.B) {`)
-            p.In()
-            p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(616))`)
-            p.P(`total := 0`)
-            p.P(`pops := make([]*`, ccTypeName, `, 1000)`)
-            p.P(`for i := 0; i < 1000; i++ {`)
-            p.In()
-            p.P(`pops[i] = NewPopulated`, ccTypeName, `(popr, false)`)
-            p.Out()
-            p.P(`}`)
-            p.P(`b.ResetTimer()`)
-            p.P(`for i := 0; i < b.N; i++ {`)
-            p.In()
-            p.P(`total += pops[i%1000].Size()`)
-            p.Out()
-            p.P(`}`)
-            p.P(`b.SetBytes(int64(total / b.N))`)
-            p.Out()
-            p.P(`}`)
-            p.P()
-        }
+		if gogoproto.HasBenchGen(file.FileDescriptorProto, message.DescriptorProto) {
+			used = true
+			p.P(`func Benchmark`, ccTypeName, `Size(b *`, testingPkg.Use(), `.B) {`)
+			p.In()
+			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(616))`)
+			p.P(`total := 0`)
+			p.P(`pops := make([]*`, ccTypeName, `, 1000)`)
+			p.P(`for i := 0; i < 1000; i++ {`)
+			p.In()
+			p.P(`pops[i] = NewPopulated`, ccTypeName, `(popr, false)`)
+			p.Out()
+			p.P(`}`)
+			p.P(`b.ResetTimer()`)
+			p.P(`for i := 0; i < b.N; i++ {`)
+			p.In()
+			p.P(`total += pops[i%1000].Size()`)
+			p.Out()
+			p.P(`}`)
+			p.P(`b.SetBytes(int64(total / b.N))`)
+			p.Out()
+			p.P(`}`)
+			p.P()
+		}
 
-    }
-    return used
+	}
+	return used
 }
 
 func init() {
-    testgen.RegisterTestPlugin(NewTest)
+	testgen.RegisterTestPlugin(NewTest)
 }

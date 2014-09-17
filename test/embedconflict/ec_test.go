@@ -27,76 +27,76 @@
 package embedconflict
 
 import (
-    "os"
-    "os/exec"
-    "strings"
-    "testing"
+	"os"
+	"os/exec"
+	"strings"
+	"testing"
 
-    "github.com/dropbox/goprotoc/test_config"
+	"github.com/dropbox/goprotoc/test_config"
 )
 
 func TestEmbedConflict(t *testing.T) {
-    cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "ec.proto")
-    data, err := cmd.CombinedOutput()
-    if err == nil {
-        t.Errorf("Expected error")
-        if err := os.Remove("ec.pb.go"); err != nil {
-            panic(err)
-        }
-    }
-    t.Logf("received expected error = %v and output = %v", err, string(data))
+	cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "ec.proto")
+	data, err := cmd.CombinedOutput()
+	if err == nil {
+		t.Errorf("Expected error")
+		if err := os.Remove("ec.pb.go"); err != nil {
+			panic(err)
+		}
+	}
+	t.Logf("received expected error = %v and output = %v", err, string(data))
 }
 
 func TestEmbedMarshaler(t *testing.T) {
-    cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "em.proto")
-    data, err := cmd.CombinedOutput()
-    dataStr := string(data)
-    t.Logf("received error = %v and output = %v", err, dataStr)
-    if !strings.Contains(dataStr, "WARNING: found non-") || !strings.Contains(dataStr, "marshaler") {
-        t.Errorf("Expected WARNING: found non-[marshaler] C with embedded marshaler D")
-    }
-    if err := os.Remove("em.pb.go"); err != nil {
-        panic(err)
-    }
+	cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "em.proto")
+	data, err := cmd.CombinedOutput()
+	dataStr := string(data)
+	t.Logf("received error = %v and output = %v", err, dataStr)
+	if !strings.Contains(dataStr, "WARNING: found non-") || !strings.Contains(dataStr, "marshaler") {
+		t.Errorf("Expected WARNING: found non-[marshaler] C with embedded marshaler D")
+	}
+	if err := os.Remove("em.pb.go"); err != nil {
+		panic(err)
+	}
 }
 
 func TestEmbedExtend(t *testing.T) {
-    cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "ee.proto")
-    data, err := cmd.CombinedOutput()
-    if err == nil {
-        t.Errorf("Expected error")
-        if err := os.Remove("ee.pb.go"); err != nil {
-            panic(err)
-        }
-    }
-    t.Logf("received expected error = %v and output = %v", err, string(data))
+	cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "ee.proto")
+	data, err := cmd.CombinedOutput()
+	if err == nil {
+		t.Errorf("Expected error")
+		if err := os.Remove("ee.pb.go"); err != nil {
+			panic(err)
+		}
+	}
+	t.Logf("received expected error = %v and output = %v", err, string(data))
 }
 
 func TestCustomName(t *testing.T) {
-    cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "en.proto")
-    data, err := cmd.CombinedOutput()
-    if err == nil {
-        t.Errorf("Expected error")
-        if err := os.Remove("en.pb.go"); err != nil {
-            panic(err)
-        }
-    }
-    t.Logf("received expected error = %v and output = %v", err, string(data))
+	cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "en.proto")
+	data, err := cmd.CombinedOutput()
+	if err == nil {
+		t.Errorf("Expected error")
+		if err := os.Remove("en.pb.go"); err != nil {
+			panic(err)
+		}
+	}
+	t.Logf("received expected error = %v and output = %v", err, string(data))
 }
 
 func TestRepeatedEmbed(t *testing.T) {
-    cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "er.proto")
-    data, err := cmd.CombinedOutput()
-    if err == nil {
-        t.Errorf("Expected error")
-        if err := os.Remove("er.pb.go"); err != nil {
-            panic(err)
-        }
-    }
-    dataStr := string(data)
-    t.Logf("received error = %v and output = %v", err, dataStr)
-    warning := "ERROR: found repeated embedded field B in message A"
-    if !strings.Contains(dataStr, warning) {
-        t.Errorf("Expected " + warning)
-    }
+	cmd := exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "er.proto")
+	data, err := cmd.CombinedOutput()
+	if err == nil {
+		t.Errorf("Expected error")
+		if err := os.Remove("er.pb.go"); err != nil {
+			panic(err)
+		}
+	}
+	dataStr := string(data)
+	t.Logf("received error = %v and output = %v", err, dataStr)
+	warning := "ERROR: found repeated embedded field B in message A"
+	if !strings.Contains(dataStr, warning) {
+		t.Errorf("Expected " + warning)
+	}
 }

@@ -74,72 +74,72 @@ This package is subject to change, since a use has not been figured out yet.
 package description
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
-    "fmt"
+	"fmt"
+	"github.com/dropbox/goprotoc/gogoproto"
+	descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type plugin struct {
-    *generator.Generator
-    used bool
+	*generator.Generator
+	used bool
 }
 
 func NewPlugin() *plugin {
-    return &plugin{}
+	return &plugin{}
 }
 
 func (p *plugin) Name() string {
-    return "description"
+	return "description"
 }
 
 func (p *plugin) Init(g *generator.Generator) {
-    p.Generator = g
+	p.Generator = g
 }
 
 func (p *plugin) Generate(file *generator.FileDescriptor) {
-    p.used = false
-    localName := generator.FileName(file)
-    for _, message := range file.Messages() {
-        if !gogoproto.HasDescription(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
-        p.used = true
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        p.P(`func (this *`, ccTypeName, `) Description() (desc *google_protobuf.FileDescriptorSet) {`)
-        p.In()
-        p.P(`return `, localName, `Description()`)
-        p.Out()
-        p.P(`}`)
-    }
+	p.used = false
+	localName := generator.FileName(file)
+	for _, message := range file.Messages() {
+		if !gogoproto.HasDescription(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
+		p.used = true
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		p.P(`func (this *`, ccTypeName, `) Description() (desc *google_protobuf.FileDescriptorSet) {`)
+		p.In()
+		p.P(`return `, localName, `Description()`)
+		p.Out()
+		p.P(`}`)
+	}
 
-    if p.used {
+	if p.used {
 
-        p.P(`func `, localName, `Description() (desc *google_protobuf.FileDescriptorSet) {`)
-        p.In()
-        //Don't generate SourceCodeInfo, since it will create too much code.
+		p.P(`func `, localName, `Description() (desc *google_protobuf.FileDescriptorSet) {`)
+		p.In()
+		//Don't generate SourceCodeInfo, since it will create too much code.
 
-        ss := make([]*descriptor.SourceCodeInfo, 0)
-        for _, f := range p.Generator.AllFiles().GetFile() {
-            ss = append(ss, f.SourceCodeInfo)
-            f.SourceCodeInfo = nil
-        }
-        s := fmt.Sprintf("%#v", p.Generator.AllFiles())
-        for i, f := range p.Generator.AllFiles().GetFile() {
-            f.SourceCodeInfo = ss[i]
-        }
-        p.P(`return `, s)
-        p.Out()
-        p.P(`}`)
-    }
+		ss := make([]*descriptor.SourceCodeInfo, 0)
+		for _, f := range p.Generator.AllFiles().GetFile() {
+			ss = append(ss, f.SourceCodeInfo)
+			f.SourceCodeInfo = nil
+		}
+		s := fmt.Sprintf("%#v", p.Generator.AllFiles())
+		for i, f := range p.Generator.AllFiles().GetFile() {
+			f.SourceCodeInfo = ss[i]
+		}
+		p.P(`return `, s)
+		p.Out()
+		p.P(`}`)
+	}
 }
 
 func (this *plugin) GenerateImports(file *generator.FileDescriptor) {
-    if this.used {
-        this.P(`import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"`)
-    }
+	if this.used {
+		this.P(`import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"`)
+	}
 }
 
 func init() {
-    generator.RegisterPlugin(NewPlugin())
+	generator.RegisterPlugin(NewPlugin())
 }

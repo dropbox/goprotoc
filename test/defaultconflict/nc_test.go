@@ -27,39 +27,39 @@
 package defaultcheck
 
 import (
-    "os"
-    "os/exec"
-    "testing"
+	"os"
+	"os/exec"
+	"testing"
 )
 
 func testDefaultConflict(t *testing.T, name string) {
-    cmd := exec.Command("protoc", "--dgo_out=.", name+".proto")
-    data, err := cmd.CombinedOutput()
-    if err == nil {
-        t.Errorf("Expected error")
-        if err := os.Remove(name + ".pb.go"); err != nil {
-            panic(err)
-        }
-    }
-    t.Logf("received expected error = %v and output = %v", err, string(data))
+	cmd := exec.Command("protoc", "--dgo_out=.", name+".proto")
+	data, err := cmd.CombinedOutput()
+	if err == nil {
+		t.Errorf("Expected error")
+		if err := os.Remove(name + ".pb.go"); err != nil {
+			panic(err)
+		}
+	}
+	t.Logf("received expected error = %v and output = %v", err, string(data))
 }
 
 func TestNullableDefault(t *testing.T) {
-    testDefaultConflict(t, "nc")
+	testDefaultConflict(t, "nc")
 }
 
 func TestNullableExtension(t *testing.T) {
-    testDefaultConflict(t, "nx")
+	testDefaultConflict(t, "nx")
 }
 
 func TestNullableEnum(t *testing.T) {
-    testDefaultConflict(t, "ne")
+	testDefaultConflict(t, "ne")
 }
 
 func TestFaceDefault(t *testing.T) {
-    testDefaultConflict(t, "df")
+	testDefaultConflict(t, "df")
 }
 
 func TestNoGettersDefault(t *testing.T) {
-    testDefaultConflict(t, "dg")
+	testDefaultConflict(t, "dg")
 }
