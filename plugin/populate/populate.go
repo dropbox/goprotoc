@@ -46,33 +46,29 @@ The following message:
   option (gogoproto.populate_all) = true;
 
   message B {
-    option (gogoproto.description) = true;
-    optional string A = 1 [(gogoproto.embed) = true];
-    repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
+	optional A A = 1 [(gogoproto.embed) = true];
+	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
   }
 
 given to the populate plugin, will generate code the following code:
 
-    func NewPopulatedB(r randyCustom, easy bool) *B {
-        this := &B{}
-        this.xxx_IsASet = true
-        this.a = randStringCustom(r)
-        if r.Intn(10) != 0 {
-            v1 := r.Intn(100)
-            this.g = make([]github_com_dropbox_goprotoc_test.Id, v1)
-            for i := 0; i < v1; i++ {
-                this.xxx_LenG += 1
-                this.g[i] = github_com_dropbox_goprotoc_test.Id(r.Int63())
-                if r.Intn(2) == 0 {
-                    this.g[i] *= github_com_dropbox_goprotoc_test.Id(-1)
-                }
-            }
-        }
-        if !easy && r.Intn(10) != 0 {
-            this.XXX_unrecognized = randUnrecognizedCustom(r, 3)
-        }
-        return this
-    }
+  func NewPopulatedB(r randyExample, easy bool) *B {
+	this := &B{}
+	v2 := NewPopulatedA(r, easy)
+	this.A = *v2
+	if r.Intn(10) != 0 {
+		v3 := r.Intn(10)
+		this.G = make([]dropbox_gogoprotobuf_test_custom.Uint128, v3)
+		for i := 0; i < v3; i++ {
+			v4 := dropbox_gogoprotobuf_test_custom.NewPopulatedUint128(r)
+			this.G[i] = *v4
+		}
+	}
+	if !easy && r.Intn(10) != 0 {
+		this.XXX_unrecognized = randUnrecognizedExample(r, 3)
+	}
+	return this
+  }
 
 The idea that is useful for testing.
 Most of the other plugins' generated test code uses it.
@@ -86,10 +82,10 @@ These have caused problems with JSON marshalling and unmarshalling tests.
 package populate
 
 import (
-    "fmt"
     "github.com/dropbox/goprotoc/gogoproto"
     descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
     "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+    "fmt"
     "math"
     "strconv"
     "strings"
@@ -143,40 +139,29 @@ func (p *plugin) Init(g *generator.Generator) {
     p.Generator = g
 }
 
-func value(field *descriptor.FieldDescriptorProto) string {
-    switch *field.Type {
-    case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
+func value(typName string) string {
+    switch typName {
+    case "float64":
         return "r.Float64()"
-    case descriptor.FieldDescriptorProto_TYPE_FLOAT:
+    case "float32":
         return "r.Float32()"
-    case descriptor.FieldDescriptorProto_TYPE_INT64,
-        descriptor.FieldDescriptorProto_TYPE_SFIXED64,
-        descriptor.FieldDescriptorProto_TYPE_SINT64:
+    case "int64":
         return "r.Int63()"
-    case descriptor.FieldDescriptorProto_TYPE_INT32,
-        descriptor.FieldDescriptorProto_TYPE_SFIXED32,
-        descriptor.FieldDescriptorProto_TYPE_SINT32:
+    case "int32":
         return "r.Int31()"
-    case descriptor.FieldDescriptorProto_TYPE_UINT32,
-        descriptor.FieldDescriptorProto_TYPE_FIXED32:
+    case "uint32":
         return "r.Uint32()"
-    case descriptor.FieldDescriptorProto_TYPE_UINT64,
-        descriptor.FieldDescriptorProto_TYPE_FIXED64:
+    case "uint64":
         return "uint64(r.Uint32())"
-    case descriptor.FieldDescriptorProto_TYPE_BOOL:
+    case "bool":
         return `bool(r.Intn(2) == 0)`
-    default:
-        panic(fmt.Errorf("unexpected type %v", *field.Type))
     }
+    panic(fmt.Errorf("unexpected type %v", typName))
 }
 
-func negative(field *descriptor.FieldDescriptorProto) bool {
-    switch *field.Type {
-    case descriptor.FieldDescriptorProto_TYPE_UINT64,
-        descriptor.FieldDescriptorProto_TYPE_FIXED64,
-        descriptor.FieldDescriptorProto_TYPE_UINT32,
-        descriptor.FieldDescriptorProto_TYPE_FIXED32,
-        descriptor.FieldDescriptorProto_TYPE_BOOL:
+func negative(typeName string) bool {
+    switch typeName {
+    case "uint32", "uint64", "bool":
         return false
     }
     return true
@@ -186,14 +171,6 @@ func (p *plugin) GenerateField(message *generator.Descriptor, field *descriptor.
     goTyp, _ := p.GoType(message, field)
     fieldname := p.GetFieldName(message, field)
     goTypName := generator.GoTypeToName(goTyp)
-    ctype := ""
-    if gogoproto.IsCustomType(field) {
-        _, typ, err := generator.GetCustomType(field)
-        if err != nil {
-            panic(err)
-        }
-        ctype = typ
-    }
     if field.IsMessage() || p.IsGroup(field) {
         funcName := "NewPopulated" + goTypName
         goTypNames := strings.Split(goTypName, ".")
@@ -241,6 +218,30 @@ func (p *plugin) GenerateField(message *generator.Descriptor, field *descriptor.
                 p.P(`this.`, generator.SetterName(fieldname), ` = true`)
                 p.P(`this.`, fieldname, ` = `, val)
             }
+        } else if gogoproto.IsCustomType(field) {
+            funcName := "NewPopulated" + goTypName
+            goTypNames := strings.Split(goTypName, ".")
+            if len(goTypNames) == 2 {
+                funcName = goTypNames[0] + ".NewPopulated" + goTypNames[1]
+            } else if len(goTypNames) != 1 {
+                panic(fmt.Errorf("unreachable: too many dots in %v", goTypName))
+            }
+            funcCall := funcName + "(r)"
+            if field.IsRepeated() {
+                p.P(p.varGen.Next(), ` := r.Intn(10)`)
+                p.P(`this.`, fieldname, ` = make(`, goTyp, `, `, p.varGen.Current(), `)`)
+                p.P(`for i := 0; i < `, p.varGen.Current(), `; i++ {`)
+                p.In()
+                p.P(p.varGen.Next(), `:= `, funcCall)
+                p.P(`this.`, generator.SizerName(fieldname), ` += 1`)
+                p.P(`this.`, fieldname, `[i] = *`, p.varGen.Current())
+                p.Out()
+                p.P(`}`)
+            } else {
+                p.P(p.varGen.Next(), `:= `, funcCall)
+                p.P(`this.`, generator.SetterName(fieldname), ` = true`)
+                p.P(`this.`, fieldname, ` = *`, p.varGen.Current())
+            }
         } else if field.IsBytes() {
             if field.IsRepeated() {
                 p.P(p.varGen.Next(), ` := r.Intn(100)`)
@@ -283,17 +284,18 @@ func (p *plugin) GenerateField(message *generator.Descriptor, field *descriptor.
                 p.P(`this.`, fieldname, ` = `, val)
             }
         } else {
+            typName := generator.GoTypeToName(goTyp)
             if field.IsRepeated() {
                 p.P(p.varGen.Next(), ` := r.Intn(100)`)
                 p.P(`this.`, fieldname, ` = make(`, goTyp, `, `, p.varGen.Current(), `)`)
                 p.P(`for i := 0; i < `, p.varGen.Current(), `; i++ {`)
                 p.In()
                 p.P(`this.`, generator.SizerName(fieldname), ` += 1`)
-                p.P(`this.`, fieldname, `[i] = `, ctype, `(`, value(field), `)`)
-                if negative(field) {
+                p.P(`this.`, fieldname, `[i] = `, value(typName))
+                if negative(typName) {
                     p.P(`if r.Intn(2) == 0 {`)
                     p.In()
-                    p.P(`this.`, fieldname, `[i] *= `, ctype, `(-1)`)
+                    p.P(`this.`, fieldname, `[i] *= -1`)
                     p.Out()
                     p.P(`}`)
                 }
@@ -301,11 +303,11 @@ func (p *plugin) GenerateField(message *generator.Descriptor, field *descriptor.
                 p.P(`}`)
             } else {
                 p.P(`this.`, generator.SetterName(fieldname), ` = true`)
-                p.P(`this.`, fieldname, ` = `, ctype, `(`, value(field), `)`)
-                if negative(field) {
+                p.P(`this.`, fieldname, ` = `, value(typName))
+                if negative(typName) {
                     p.P(`if r.Intn(2) == 0 {`)
                     p.In()
-                    p.P(`this.`, fieldname, ` *= `, ctype, `(-1)`)
+                    p.P(`this.`, fieldname, ` *= -1`)
                     p.Out()
                     p.P(`}`)
                 }

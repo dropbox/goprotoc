@@ -29,8 +29,8 @@
 package io
 
 import (
-    "encoding/binary"
     "github.com/dropbox/goprotoc/proto"
+    "encoding/binary"
     "io"
 )
 

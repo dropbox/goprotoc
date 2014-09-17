@@ -61,7 +61,7 @@ The following message:
 	option (gogoproto.goproto_getters) = false;
 	optional string Description = 1;
 	optional int64 Number = 2;
-	optional int64 Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
+	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uuid"];
   }
 
 given to the face plugin, will generate the following code:
@@ -70,7 +70,7 @@ given to the face plugin, will generate the following code:
 		Proto() dropbox_gogoprotobuf_proto.Message
 		GetDescription() string
 		GetNumber() int64
-		GetId() dropbox_gogoprotobuf_test.Id
+		GetId() dropbox_gogoprotobuf_test_custom.Uuid
 	}
 
 	func (this *A) Proto() dropbox_gogoprotobuf_proto.Message {
@@ -85,7 +85,7 @@ given to the face plugin, will generate the following code:
 		return this.Number
 	}
 
-	func (this *A) GetId() dropbox_gogoprotobuf_test.Id {
+	func (this *A) GetId() dropbox_gogoprotobuf_test_custom.Uuid {
 		return this.Id
 	}
 

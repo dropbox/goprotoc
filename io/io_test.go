@@ -30,9 +30,9 @@ package io_test
 
 import (
     "bytes"
-    "encoding/binary"
     "github.com/dropbox/goprotoc/io"
     "github.com/dropbox/goprotoc/test"
+    "encoding/binary"
     goio "io"
     "math/rand"
     "testing"
