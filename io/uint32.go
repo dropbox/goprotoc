@@ -29,88 +29,88 @@
 package io
 
 import (
-    "github.com/dropbox/goprotoc/proto"
-    "encoding/binary"
-    "io"
+	"encoding/binary"
+	"github.com/dropbox/goprotoc/proto"
+	"io"
 )
 
 func NewUint32DelimitedWriter(w io.Writer, byteOrder binary.ByteOrder) WriteCloser {
-    return &uint32Writer{w, byteOrder, nil}
+	return &uint32Writer{w, byteOrder, nil}
 }
 
 type uint32Writer struct {
-    w         io.Writer
-    byteOrder binary.ByteOrder
-    buffer    []byte
+	w         io.Writer
+	byteOrder binary.ByteOrder
+	buffer    []byte
 }
 
 func (this *uint32Writer) WriteMsg(msg proto.Message) (err error) {
-    var data []byte
-    if m, ok := msg.(marshaler); ok {
-        n := m.Size()
-        if n >= len(this.buffer) {
-            this.buffer = make([]byte, n)
-        }
-        _, err = m.MarshalTo(this.buffer)
-        if err != nil {
-            return err
-        }
-        data = this.buffer[:n]
-    } else {
-        data, err = proto.Marshal(msg)
-        if err != nil {
-            return err
-        }
-    }
-    length := uint32(len(data))
-    if err := binary.Write(this.w, this.byteOrder, &length); err != nil {
-        return err
-    }
-    _, err = this.w.Write(data)
-    return err
+	var data []byte
+	if m, ok := msg.(marshaler); ok {
+		n := m.Size()
+		if n >= len(this.buffer) {
+			this.buffer = make([]byte, n)
+		}
+		_, err = m.MarshalTo(this.buffer)
+		if err != nil {
+			return err
+		}
+		data = this.buffer[:n]
+	} else {
+		data, err = proto.Marshal(msg)
+		if err != nil {
+			return err
+		}
+	}
+	length := uint32(len(data))
+	if err := binary.Write(this.w, this.byteOrder, &length); err != nil {
+		return err
+	}
+	_, err = this.w.Write(data)
+	return err
 }
 
 func (this *uint32Writer) Close() error {
-    if closer, ok := this.w.(io.Closer); ok {
-        return closer.Close()
-    }
-    return nil
+	if closer, ok := this.w.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }
 
 type uint32Reader struct {
-    r         io.Reader
-    byteOrder binary.ByteOrder
-    lenBuf    []byte
-    buf       []byte
-    maxSize   int
+	r         io.Reader
+	byteOrder binary.ByteOrder
+	lenBuf    []byte
+	buf       []byte
+	maxSize   int
 }
 
 func NewUint32DelimitedReader(r io.Reader, byteOrder binary.ByteOrder, maxSize int) ReadCloser {
-    return &uint32Reader{r, byteOrder, make([]byte, 4), nil, maxSize}
+	return &uint32Reader{r, byteOrder, make([]byte, 4), nil, maxSize}
 }
 
 func (this *uint32Reader) ReadMsg(msg proto.Message) error {
-    if _, err := io.ReadFull(this.r, this.lenBuf); err != nil {
-        return err
-    }
-    length32 := this.byteOrder.Uint32(this.lenBuf)
-    length := int(length32)
-    if length < 0 || length > this.maxSize {
-        return io.ErrShortBuffer
-    }
-    if length >= len(this.buf) {
-        this.buf = make([]byte, length)
-    }
-    _, err := io.ReadFull(this.r, this.buf[:length])
-    if err != nil {
-        return err
-    }
-    return proto.Unmarshal(this.buf[:length], msg)
+	if _, err := io.ReadFull(this.r, this.lenBuf); err != nil {
+		return err
+	}
+	length32 := this.byteOrder.Uint32(this.lenBuf)
+	length := int(length32)
+	if length < 0 || length > this.maxSize {
+		return io.ErrShortBuffer
+	}
+	if length >= len(this.buf) {
+		this.buf = make([]byte, length)
+	}
+	_, err := io.ReadFull(this.r, this.buf[:length])
+	if err != nil {
+		return err
+	}
+	return proto.Unmarshal(this.buf[:length], msg)
 }
 
 func (this *uint32Reader) Close() error {
-    if closer, ok := this.r.(io.Closer); ok {
-        return closer.Close()
-    }
-    return nil
+	if closer, ok := this.r.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }

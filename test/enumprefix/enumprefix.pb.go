@@ -24,8 +24,8 @@ var _ = proto.Marshal
 var _ = math.Inf
 
 type MyMessage struct {
-    TheField         test.TheTestEnum `protobuf:"varint,1,opt,enum=test.TheTestEnum" json:"TheField"`
-    XXX_unrecognized []byte           `json:"-"`
+	TheField         test.TheTestEnum `protobuf:"varint,1,opt,enum=test.TheTestEnum" json:"TheField"`
+	XXX_unrecognized []byte           `json:"-"`
 }
 
 func (m *MyMessage) Reset()         { *m = MyMessage{} }
@@ -33,10 +33,10 @@ func (m *MyMessage) String() string { return proto.CompactTextString(m) }
 func (*MyMessage) ProtoMessage()    {}
 
 func (m *MyMessage) GetTheField() test.TheTestEnum {
-    if m != nil {
-        return m.TheField
-    }
-    return test.A
+	if m != nil {
+		return m.TheField
+	}
+	return test.A
 }
 
 func init() {

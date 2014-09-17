@@ -27,15 +27,15 @@
 package custom
 
 import (
-    "testing"
+	"testing"
 )
 
 func TestUint128(t *testing.T) {
-    var uint128a = Uint128{0, 1}
-    buf := make([]byte, 16)
-    PutLittleEndianUint128(buf, 0, uint128a)
-    uint128b := GetLittleEndianUint128(buf, 0)
-    if !uint128a.Equal(uint128b) {
-        t.Fatalf("%v != %v", uint128a, uint128b)
-    }
+	var uint128a = Uint128{0, 1}
+	buf := make([]byte, 16)
+	PutLittleEndianUint128(buf, 0, uint128a)
+	uint128b := GetLittleEndianUint128(buf, 0)
+	if !uint128a.Equal(uint128b) {
+		t.Fatalf("%v != %v", uint128a, uint128b)
+	}
 }

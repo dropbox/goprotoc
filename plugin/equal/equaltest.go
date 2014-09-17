@@ -27,62 +27,62 @@
 package equal
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/plugin/testgen"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/plugin/testgen"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {
-    *generator.Generator
+	*generator.Generator
 }
 
 func NewTest(g *generator.Generator) testgen.TestPlugin {
-    return &test{g}
+	return &test{g}
 }
 
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
-    used := false
-    randPkg := imports.NewImport("math/rand")
-    timePkg := imports.NewImport("time")
-    testingPkg := imports.NewImport("testing")
-    protoPkg := imports.NewImport("github.com/dropbox/goprotoc/proto")
-    for _, message := range file.Messages() {
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        if !gogoproto.HasVerboseEqual(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
+	used := false
+	randPkg := imports.NewImport("math/rand")
+	timePkg := imports.NewImport("time")
+	testingPkg := imports.NewImport("testing")
+	protoPkg := imports.NewImport("github.com/dropbox/goprotoc/proto")
+	for _, message := range file.Messages() {
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		if !gogoproto.HasVerboseEqual(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
 
-        if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
-            used = true
-            p.P(`func Test`, ccTypeName, `VerboseEqual(t *`, testingPkg.Use(), `.T) {`)
-            p.In()
-            p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
-            p.P(`p := NewPopulated`, ccTypeName, `(popr, false)`)
-            p.P(`data, err := `, protoPkg.Use(), `.Marshal(p)`)
-            p.P(`if err != nil {`)
-            p.In()
-            p.P(`panic(err)`)
-            p.Out()
-            p.P(`}`)
-            p.P(`msg := &`, ccTypeName, `{}`)
-            p.P(`if err := `, protoPkg.Use(), `.Unmarshal(data, msg); err != nil {`)
-            p.In()
-            p.P(`panic(err)`)
-            p.Out()
-            p.P(`}`)
-            p.P(`if err := p.VerboseEqual(msg); err != nil {`)
-            p.In()
-            p.P(`t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)`)
-            p.Out()
-            p.P(`}`)
-            p.Out()
-            p.P(`}`)
-        }
+		if gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
+			used = true
+			p.P(`func Test`, ccTypeName, `VerboseEqual(t *`, testingPkg.Use(), `.T) {`)
+			p.In()
+			p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
+			p.P(`p := NewPopulated`, ccTypeName, `(popr, false)`)
+			p.P(`data, err := `, protoPkg.Use(), `.Marshal(p)`)
+			p.P(`if err != nil {`)
+			p.In()
+			p.P(`panic(err)`)
+			p.Out()
+			p.P(`}`)
+			p.P(`msg := &`, ccTypeName, `{}`)
+			p.P(`if err := `, protoPkg.Use(), `.Unmarshal(data, msg); err != nil {`)
+			p.In()
+			p.P(`panic(err)`)
+			p.Out()
+			p.P(`}`)
+			p.P(`if err := p.VerboseEqual(msg); err != nil {`)
+			p.In()
+			p.P(`t.Fatalf("%#v !VerboseEqual %#v, since %v", msg, p, err)`)
+			p.Out()
+			p.P(`}`)
+			p.Out()
+			p.P(`}`)
+		}
 
-    }
-    return used
+	}
+	return used
 }
 
 func init() {
-    testgen.RegisterTestPlugin(NewTest)
+	testgen.RegisterTestPlugin(NewTest)
 }

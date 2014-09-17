@@ -30,131 +30,131 @@ import google_protobuf "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
 import proto "github.com/dropbox/goprotoc/proto"
 
 func IsEmbed(field *google_protobuf.FieldDescriptorProto) bool {
-    return proto.GetBoolExtension(field.Options, E_Embed, false)
+	return proto.GetBoolExtension(field.Options, E_Embed, false)
 }
 
 func IsCustomType(field *google_protobuf.FieldDescriptorProto) bool {
-    typ := GetCustomType(field)
-    if len(typ) > 0 {
-        return true
-    }
-    return false
+	typ := GetCustomType(field)
+	if len(typ) > 0 {
+		return true
+	}
+	return false
 }
 
 func GetCustomType(field *google_protobuf.FieldDescriptorProto) string {
-    if field.Options != nil {
-        v, err := proto.GetExtension(field.Options, E_Customtype)
-        if err == nil && v.(*string) != nil {
-            return *(v.(*string))
-        }
-    }
-    return ""
+	if field.Options != nil {
+		v, err := proto.GetExtension(field.Options, E_Customtype)
+		if err == nil && v.(*string) != nil {
+			return *(v.(*string))
+		}
+	}
+	return ""
 }
 
 func IsCustomName(field *google_protobuf.FieldDescriptorProto) bool {
-    name := GetCustomName(field)
-    if len(name) > 0 {
-        return true
-    }
-    return false
+	name := GetCustomName(field)
+	if len(name) > 0 {
+		return true
+	}
+	return false
 }
 
 func GetCustomName(field *google_protobuf.FieldDescriptorProto) string {
-    if field.Options != nil {
-        v, err := proto.GetExtension(field.Options, E_Customname)
-        if err == nil && v.(*string) != nil {
-            return *(v.(*string))
-        }
-    }
-    return ""
+	if field.Options != nil {
+		v, err := proto.GetExtension(field.Options, E_Customname)
+		if err == nil && v.(*string) != nil {
+			return *(v.(*string))
+		}
+	}
+	return ""
 }
 
 func GetJsonTag(field *google_protobuf.FieldDescriptorProto) *string {
-    if field.Options != nil {
-        v, err := proto.GetExtension(field.Options, E_Jsontag)
-        if err == nil && v.(*string) != nil {
-            return (v.(*string))
-        }
-    }
-    return nil
+	if field.Options != nil {
+		v, err := proto.GetExtension(field.Options, E_Jsontag)
+		if err == nil && v.(*string) != nil {
+			return (v.(*string))
+		}
+	}
+	return nil
 }
 
 func GetMoreTags(field *google_protobuf.FieldDescriptorProto) *string {
-    if field.Options != nil {
-        v, err := proto.GetExtension(field.Options, E_Moretags)
-        if err == nil && v.(*string) != nil {
-            return (v.(*string))
-        }
-    }
-    return nil
+	if field.Options != nil {
+		v, err := proto.GetExtension(field.Options, E_Moretags)
+		if err == nil && v.(*string) != nil {
+			return (v.(*string))
+		}
+	}
+	return nil
 }
 
 type EnableFunc func(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool
 
 func EnabledGoEnumPrefix(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-    return proto.GetBoolExtension(enum.Options, E_GoprotoEnumPrefix, proto.GetBoolExtension(file.Options, E_GoprotoEnumPrefixAll, true))
+	return proto.GetBoolExtension(enum.Options, E_GoprotoEnumPrefix, proto.GetBoolExtension(file.Options, E_GoprotoEnumPrefixAll, true))
 }
 
 func IsUnion(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Onlyone, proto.GetBoolExtension(file.Options, E_OnlyoneAll, false))
+	return proto.GetBoolExtension(message.Options, E_Onlyone, proto.GetBoolExtension(file.Options, E_OnlyoneAll, false))
 }
 
 func HasEqual(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Equal, proto.GetBoolExtension(file.Options, E_EqualAll, false))
+	return proto.GetBoolExtension(message.Options, E_Equal, proto.GetBoolExtension(file.Options, E_EqualAll, false))
 }
 
 func HasVerboseEqual(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_VerboseEqual, proto.GetBoolExtension(file.Options, E_VerboseEqualAll, false))
+	return proto.GetBoolExtension(message.Options, E_VerboseEqual, proto.GetBoolExtension(file.Options, E_VerboseEqualAll, false))
 }
 
 func IsStringer(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Stringer, proto.GetBoolExtension(file.Options, E_StringerAll, true))
+	return proto.GetBoolExtension(message.Options, E_Stringer, proto.GetBoolExtension(file.Options, E_StringerAll, true))
 }
 
 func IsFace(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Face, proto.GetBoolExtension(file.Options, E_FaceAll, false))
+	return proto.GetBoolExtension(message.Options, E_Face, proto.GetBoolExtension(file.Options, E_FaceAll, false))
 }
 
 func HasDescription(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Description, proto.GetBoolExtension(file.Options, E_DescriptionAll, false))
+	return proto.GetBoolExtension(message.Options, E_Description, proto.GetBoolExtension(file.Options, E_DescriptionAll, false))
 }
 
 func HasPopulate(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Populate, proto.GetBoolExtension(file.Options, E_PopulateAll, false))
+	return proto.GetBoolExtension(message.Options, E_Populate, proto.GetBoolExtension(file.Options, E_PopulateAll, false))
 }
 
 func HasTestGen(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Testgen, proto.GetBoolExtension(file.Options, E_TestgenAll, false))
+	return proto.GetBoolExtension(message.Options, E_Testgen, proto.GetBoolExtension(file.Options, E_TestgenAll, false))
 }
 
 func HasBenchGen(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Benchgen, proto.GetBoolExtension(file.Options, E_BenchgenAll, false))
+	return proto.GetBoolExtension(message.Options, E_Benchgen, proto.GetBoolExtension(file.Options, E_BenchgenAll, false))
 }
 
 func IsMarshaler(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Marshaler, proto.GetBoolExtension(file.Options, E_MarshalerAll, true))
+	return proto.GetBoolExtension(message.Options, E_Marshaler, proto.GetBoolExtension(file.Options, E_MarshalerAll, true))
 }
 
 func IsUnmarshaler(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Unmarshaler, proto.GetBoolExtension(file.Options, E_UnmarshalerAll, true))
+	return proto.GetBoolExtension(message.Options, E_Unmarshaler, proto.GetBoolExtension(file.Options, E_UnmarshalerAll, true))
 }
 
 func HasBufferTo(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Bufferto, proto.GetBoolExtension(file.Options, E_BuffertoAll, false))
+	return proto.GetBoolExtension(message.Options, E_Bufferto, proto.GetBoolExtension(file.Options, E_BuffertoAll, false))
 }
 
 func IsSizer(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_Sizer, proto.GetBoolExtension(file.Options, E_SizerAll, true))
+	return proto.GetBoolExtension(message.Options, E_Sizer, proto.GetBoolExtension(file.Options, E_SizerAll, true))
 }
 
 func IsGoEnumStringer(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-    return proto.GetBoolExtension(enum.Options, E_GoprotoEnumStringer, proto.GetBoolExtension(file.Options, E_GoprotoEnumStringerAll, true))
+	return proto.GetBoolExtension(enum.Options, E_GoprotoEnumStringer, proto.GetBoolExtension(file.Options, E_GoprotoEnumStringerAll, true))
 }
 
 func IsEnumStringer(file *google_protobuf.FileDescriptorProto, enum *google_protobuf.EnumDescriptorProto) bool {
-    return proto.GetBoolExtension(enum.Options, E_EnumStringer, proto.GetBoolExtension(file.Options, E_EnumStringerAll, false))
+	return proto.GetBoolExtension(enum.Options, E_EnumStringer, proto.GetBoolExtension(file.Options, E_EnumStringerAll, false))
 }
 
 func HasExtensionsMap(file *google_protobuf.FileDescriptorProto, message *google_protobuf.DescriptorProto) bool {
-    return proto.GetBoolExtension(message.Options, E_GoprotoExtensionsMap, proto.GetBoolExtension(file.Options, E_GoprotoExtensionsMapAll, true))
+	return proto.GetBoolExtension(message.Options, E_GoprotoExtensionsMap, proto.GetBoolExtension(file.Options, E_GoprotoExtensionsMapAll, true))
 }

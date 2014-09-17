@@ -27,194 +27,194 @@
 package proto
 
 import (
-    "reflect"
+	"reflect"
 )
 
 // Decode a reference to a bool pointer.
 func (o *Buffer) dec_ref_bool(p *Properties, base structPointer) error {
-    u, err := p.valDec(o)
-    if err != nil {
-        return err
-    }
-    if len(o.bools) == 0 {
-        o.bools = make([]bool, boolPoolSize)
-    }
-    o.bools[0] = u != 0
-    *structPointer_RefBool(base, p.field) = o.bools[0]
-    o.bools = o.bools[1:]
-    return nil
+	u, err := p.valDec(o)
+	if err != nil {
+		return err
+	}
+	if len(o.bools) == 0 {
+		o.bools = make([]bool, boolPoolSize)
+	}
+	o.bools[0] = u != 0
+	*structPointer_RefBool(base, p.field) = o.bools[0]
+	o.bools = o.bools[1:]
+	return nil
 }
 
 // Decode a reference to an int32 pointer.
 func (o *Buffer) dec_ref_int32(p *Properties, base structPointer) error {
-    u, err := p.valDec(o)
-    if err != nil {
-        return err
-    }
-    refWord32_Set(structPointer_RefWord32(base, p.field), o, uint32(u))
-    return nil
+	u, err := p.valDec(o)
+	if err != nil {
+		return err
+	}
+	refWord32_Set(structPointer_RefWord32(base, p.field), o, uint32(u))
+	return nil
 }
 
 // Decode a reference to an int64 pointer.
 func (o *Buffer) dec_ref_int64(p *Properties, base structPointer) error {
-    u, err := p.valDec(o)
-    if err != nil {
-        return err
-    }
-    refWord64_Set(structPointer_RefWord64(base, p.field), o, u)
-    return nil
+	u, err := p.valDec(o)
+	if err != nil {
+		return err
+	}
+	refWord64_Set(structPointer_RefWord64(base, p.field), o, u)
+	return nil
 }
 
 // Decode a reference to a string pointer.
 func (o *Buffer) dec_ref_string(p *Properties, base structPointer) error {
-    s, err := o.DecodeStringBytes()
-    if err != nil {
-        return err
-    }
-    *structPointer_RefString(base, p.field) = s
-    return nil
+	s, err := o.DecodeStringBytes()
+	if err != nil {
+		return err
+	}
+	*structPointer_RefString(base, p.field) = s
+	return nil
 }
 
 // Decode a reference to a struct pointer.
 func (o *Buffer) dec_ref_struct_message(p *Properties, base structPointer) (err error) {
-    raw, e := o.DecodeRawBytes(false)
-    if e != nil {
-        return e
-    }
+	raw, e := o.DecodeRawBytes(false)
+	if e != nil {
+		return e
+	}
 
-    // If the object can unmarshal itself, let it.
-    if p.isUnmarshaler {
-        panic("not supported, since this is a pointer receiver")
-    }
+	// If the object can unmarshal itself, let it.
+	if p.isUnmarshaler {
+		panic("not supported, since this is a pointer receiver")
+	}
 
-    obuf := o.buf
-    oi := o.index
-    o.buf = raw
-    o.index = 0
+	obuf := o.buf
+	oi := o.index
+	o.buf = raw
+	o.index = 0
 
-    bas := structPointer_FieldPointer(base, p.field)
+	bas := structPointer_FieldPointer(base, p.field)
 
-    err = o.unmarshalType(p.stype, p.sprop, false, bas)
-    o.buf = obuf
-    o.index = oi
+	err = o.unmarshalType(p.stype, p.sprop, false, bas)
+	o.buf = obuf
+	o.index = oi
 
-    return err
+	return err
 }
 
 // Decode a slice of references to struct pointers ([]struct).
 func (o *Buffer) dec_slice_ref_struct(p *Properties, is_group bool, base structPointer) error {
-    newBas := appendStructPointer(base, p.field, p.sstype)
+	newBas := appendStructPointer(base, p.field, p.sstype)
 
-    if is_group {
-        panic("not supported, maybe in future, if requested.")
-    }
+	if is_group {
+		panic("not supported, maybe in future, if requested.")
+	}
 
-    raw, err := o.DecodeRawBytes(false)
-    if err != nil {
-        return err
-    }
+	raw, err := o.DecodeRawBytes(false)
+	if err != nil {
+		return err
+	}
 
-    // If the object can unmarshal itself, let it.
-    if p.isUnmarshaler {
-        panic("not supported, since this is not a pointer receiver.")
-    }
+	// If the object can unmarshal itself, let it.
+	if p.isUnmarshaler {
+		panic("not supported, since this is not a pointer receiver.")
+	}
 
-    obuf := o.buf
-    oi := o.index
-    o.buf = raw
-    o.index = 0
+	obuf := o.buf
+	oi := o.index
+	o.buf = raw
+	o.index = 0
 
-    err = o.unmarshalType(p.stype, p.sprop, is_group, newBas)
+	err = o.unmarshalType(p.stype, p.sprop, is_group, newBas)
 
-    o.buf = obuf
-    o.index = oi
+	o.buf = obuf
+	o.index = oi
 
-    return err
+	return err
 }
 
 // Decode a slice of references to struct pointers.
 func (o *Buffer) dec_slice_ref_struct_message(p *Properties, base structPointer) error {
-    return o.dec_slice_ref_struct(p, false, base)
+	return o.dec_slice_ref_struct(p, false, base)
 }
 
 func setPtrCustomType(base structPointer, f field, v interface{}) {
-    if v == nil {
-        return
-    }
-    structPointer_SetStructPointer(base, f, structPointer(reflect.ValueOf(v).Pointer()))
+	if v == nil {
+		return
+	}
+	structPointer_SetStructPointer(base, f, structPointer(reflect.ValueOf(v).Pointer()))
 }
 
 func setCustomType(base structPointer, f field, value interface{}) {
-    if value == nil {
-        return
-    }
-    v := reflect.ValueOf(value).Elem()
-    t := reflect.TypeOf(value).Elem()
-    kind := t.Kind()
-    switch kind {
-    case reflect.Slice:
-        slice := reflect.MakeSlice(t, v.Len(), v.Cap())
-        reflect.Copy(slice, v)
-        oldHeader := structPointer_GetSliceHeader(base, f)
-        oldHeader.Data = slice.Pointer()
-        oldHeader.Len = v.Len()
-        oldHeader.Cap = v.Cap()
-    default:
-        l := 1
-        size := reflect.TypeOf(value).Elem().Size()
-        if kind == reflect.Array {
-            l = reflect.TypeOf(value).Elem().Len()
-            size = reflect.TypeOf(value).Size()
-        }
-        total := int(size) * l
-        structPointer_Copy(toStructPointer(reflect.ValueOf(value)), structPointer_Add(base, f), total)
-    }
+	if value == nil {
+		return
+	}
+	v := reflect.ValueOf(value).Elem()
+	t := reflect.TypeOf(value).Elem()
+	kind := t.Kind()
+	switch kind {
+	case reflect.Slice:
+		slice := reflect.MakeSlice(t, v.Len(), v.Cap())
+		reflect.Copy(slice, v)
+		oldHeader := structPointer_GetSliceHeader(base, f)
+		oldHeader.Data = slice.Pointer()
+		oldHeader.Len = v.Len()
+		oldHeader.Cap = v.Cap()
+	default:
+		l := 1
+		size := reflect.TypeOf(value).Elem().Size()
+		if kind == reflect.Array {
+			l = reflect.TypeOf(value).Elem().Len()
+			size = reflect.TypeOf(value).Size()
+		}
+		total := int(size) * l
+		structPointer_Copy(toStructPointer(reflect.ValueOf(value)), structPointer_Add(base, f), total)
+	}
 }
 
 func (o *Buffer) dec_custom_bytes(p *Properties, base structPointer) error {
-    b, err := o.DecodeRawBytes(true)
-    if err != nil {
-        return err
-    }
-    i := reflect.New(p.ctype.Elem()).Interface()
-    custom := (i).(Unmarshaler)
-    if err := custom.Unmarshal(b); err != nil {
-        return err
-    }
-    setPtrCustomType(base, p.field, custom)
-    return nil
+	b, err := o.DecodeRawBytes(true)
+	if err != nil {
+		return err
+	}
+	i := reflect.New(p.ctype.Elem()).Interface()
+	custom := (i).(Unmarshaler)
+	if err := custom.Unmarshal(b); err != nil {
+		return err
+	}
+	setPtrCustomType(base, p.field, custom)
+	return nil
 }
 
 func (o *Buffer) dec_custom_ref_bytes(p *Properties, base structPointer) error {
-    b, err := o.DecodeRawBytes(true)
-    if err != nil {
-        return err
-    }
-    i := reflect.New(p.ctype).Interface()
-    custom := (i).(Unmarshaler)
-    if err := custom.Unmarshal(b); err != nil {
-        return err
-    }
-    if custom != nil {
-        setCustomType(base, p.field, custom)
-    }
-    return nil
+	b, err := o.DecodeRawBytes(true)
+	if err != nil {
+		return err
+	}
+	i := reflect.New(p.ctype).Interface()
+	custom := (i).(Unmarshaler)
+	if err := custom.Unmarshal(b); err != nil {
+		return err
+	}
+	if custom != nil {
+		setCustomType(base, p.field, custom)
+	}
+	return nil
 }
 
 // Decode a slice of bytes ([]byte) into a slice of custom types.
 func (o *Buffer) dec_custom_slice_bytes(p *Properties, base structPointer) error {
-    b, err := o.DecodeRawBytes(true)
-    if err != nil {
-        return err
-    }
-    i := reflect.New(p.ctype.Elem()).Interface()
-    custom := (i).(Unmarshaler)
-    if err := custom.Unmarshal(b); err != nil {
-        return err
-    }
-    newBas := appendStructPointer(base, p.field, p.ctype)
+	b, err := o.DecodeRawBytes(true)
+	if err != nil {
+		return err
+	}
+	i := reflect.New(p.ctype.Elem()).Interface()
+	custom := (i).(Unmarshaler)
+	if err := custom.Unmarshal(b); err != nil {
+		return err
+	}
+	newBas := appendStructPointer(base, p.field, p.ctype)
 
-    setCustomType(newBas, 0, custom)
+	setCustomType(newBas, 0, custom)
 
-    return nil
+	return nil
 }

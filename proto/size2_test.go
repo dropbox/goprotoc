@@ -32,7 +32,7 @@
 package proto
 
 import (
-    "testing"
+	"testing"
 )
 
 // This is a separate file and package from size_test.go because that one uses
@@ -40,24 +40,24 @@ import (
 // dependency, whereas this file tests unexported details of size.go.
 
 func TestVarintSize(t *testing.T) {
-    // Check the edge cases carefully.
-    testCases := []struct {
-        n    uint64
-        size int
-    }{
-        {0, 1},
-        {1, 1},
-        {127, 1},
-        {128, 2},
-        {16383, 2},
-        {16384, 3},
-        {1<<63 - 1, 9},
-        {1 << 63, 10},
-    }
-    for _, tc := range testCases {
-        size := sizeVarint(tc.n)
-        if size != tc.size {
-            t.Errorf("sizeVarint(%d) = %d, want %d", tc.n, size, tc.size)
-        }
-    }
+	// Check the edge cases carefully.
+	testCases := []struct {
+		n    uint64
+		size int
+	}{
+		{0, 1},
+		{1, 1},
+		{127, 1},
+		{128, 2},
+		{16383, 2},
+		{16384, 3},
+		{1<<63 - 1, 9},
+		{1 << 63, 10},
+	}
+	for _, tc := range testCases {
+		size := sizeVarint(tc.n)
+		if size != tc.size {
+			t.Errorf("sizeVarint(%d) = %d, want %d", tc.n, size, tc.size)
+		}
+	}
 }

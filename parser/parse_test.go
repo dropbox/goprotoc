@@ -29,12 +29,12 @@
 package parser
 
 import (
-    "testing"
+	"testing"
 )
 
 func TestParse(t *testing.T) {
-    _, err := ParseFile("../protobuf/google/protobuf/descriptor.proto", "../protobuf/")
-    if err != nil {
-        panic(err)
-    }
+	_, err := ParseFile("../protobuf/google/protobuf/descriptor.proto", "../protobuf/")
+	if err != nil {
+		panic(err)
+	}
 }

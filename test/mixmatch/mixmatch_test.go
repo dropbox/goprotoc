@@ -27,91 +27,91 @@
 package mixmatch
 
 import (
-    "fmt"
-    "io/ioutil"
-    "os"
-    "os/exec"
-    "strings"
-    "testing"
-    "time"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"strings"
+	"testing"
+	"time"
 
-    "github.com/dropbox/goprotoc/test_config"
+	"github.com/dropbox/goprotoc/test_config"
 )
 
 type MixMatch struct {
-    Old []string
-    New []string
+	Old []string
+	New []string
 }
 
 func (this MixMatch) Regenerate() {
-    fmt.Printf("mixmatch\n")
-    data, err := ioutil.ReadFile("../thetest.proto")
-    if err != nil {
-        panic(err)
-    }
-    content := string(data)
-    for i, old := range this.Old {
-        content = strings.Replace(content, old, this.New[i], -1)
-    }
-    if err := ioutil.WriteFile("./testdata/thetest.proto", []byte(content), 0666); err != nil {
-        panic(err)
-    }
-    data2, err := ioutil.ReadFile("../uuid.go")
-    if err != nil {
-        panic(err)
-    }
-    if err := ioutil.WriteFile("./testdata/uuid.go", data2, 0666); err != nil {
-        panic(err)
-    }
-    time.Sleep(10 * time.Millisecond)
-    var regenerate = exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "./testdata/thetest.proto")
-    fmt.Printf("regenerating\n")
-    out, err := regenerate.CombinedOutput()
-    fmt.Printf("regenerate output: %v\n", string(out))
-    if err != nil {
-        panic(err)
-    }
+	fmt.Printf("mixmatch\n")
+	data, err := ioutil.ReadFile("../thetest.proto")
+	if err != nil {
+		panic(err)
+	}
+	content := string(data)
+	for i, old := range this.Old {
+		content = strings.Replace(content, old, this.New[i], -1)
+	}
+	if err := ioutil.WriteFile("./testdata/thetest.proto", []byte(content), 0666); err != nil {
+		panic(err)
+	}
+	data2, err := ioutil.ReadFile("../uuid.go")
+	if err != nil {
+		panic(err)
+	}
+	if err := ioutil.WriteFile("./testdata/uuid.go", data2, 0666); err != nil {
+		panic(err)
+	}
+	time.Sleep(10 * time.Millisecond)
+	var regenerate = exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "./testdata/thetest.proto")
+	fmt.Printf("regenerating\n")
+	out, err := regenerate.CombinedOutput()
+	fmt.Printf("regenerate output: %v\n", string(out))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (this MixMatch) Test(t *testing.T) {
-    if _, err := exec.LookPath("protoc"); err != nil {
-        t.Skipf("cannot find protoc in PATH")
-    }
-    if _, err := exec.LookPath("go"); err != nil {
-        t.Skipf("cannot find go in PATH")
-    }
-    if err := os.MkdirAll("./testdata", 0777); err != nil {
-        panic(err)
-    }
-    this.Regenerate()
-    var test = exec.Command("go", "test", "-v", "./testdata/")
-    fmt.Printf("testing\n")
-    out, err := test.CombinedOutput()
-    fmt.Printf("test output: %v\n", string(out))
-    if err != nil {
-        panic(err)
-    }
-    if err := os.RemoveAll("./testdata"); err != nil {
-        panic(err)
-    }
+	if _, err := exec.LookPath("protoc"); err != nil {
+		t.Skipf("cannot find protoc in PATH")
+	}
+	if _, err := exec.LookPath("go"); err != nil {
+		t.Skipf("cannot find go in PATH")
+	}
+	if err := os.MkdirAll("./testdata", 0777); err != nil {
+		panic(err)
+	}
+	this.Regenerate()
+	var test = exec.Command("go", "test", "-v", "./testdata/")
+	fmt.Printf("testing\n")
+	out, err := test.CombinedOutput()
+	fmt.Printf("test output: %v\n", string(out))
+	if err != nil {
+		panic(err)
+	}
+	if err := os.RemoveAll("./testdata"); err != nil {
+		panic(err)
+	}
 }
 
 func TestBoth(t *testing.T) {
-    if testing.Short() {
-        t.Skip("skipping test in short mode.")
-    }
-    MixMatch{
-        Old: []string{
-            "option (gogoproto.unmarshaler_all) = false;",
-            "option (gogoproto.marshaler_all) = false;",
-            "option (gogoproto.unsafe_unmarshaler_all) = true;",
-            "option (gogoproto.unsafe_marshaler_all) = true;",
-        },
-        New: []string{
-            "option (gogoproto.unmarshaler_all) = true;",
-            "option (gogoproto.marshaler_all) = true;",
-            "option (gogoproto.unsafe_unmarshaler_all) = false;",
-            "option (gogoproto.unsafe_marshaler_all) = false;",
-        },
-    }.Test(t)
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+	MixMatch{
+		Old: []string{
+			"option (gogoproto.unmarshaler_all) = false;",
+			"option (gogoproto.marshaler_all) = false;",
+			"option (gogoproto.unsafe_unmarshaler_all) = true;",
+			"option (gogoproto.unsafe_marshaler_all) = true;",
+		},
+		New: []string{
+			"option (gogoproto.unmarshaler_all) = true;",
+			"option (gogoproto.marshaler_all) = true;",
+			"option (gogoproto.unsafe_unmarshaler_all) = false;",
+			"option (gogoproto.unsafe_marshaler_all) = false;",
+		},
+	}.Test(t)
 }

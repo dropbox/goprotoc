@@ -29,29 +29,29 @@
 package io
 
 import (
-    "github.com/dropbox/goprotoc/proto"
-    "io"
+	"github.com/dropbox/goprotoc/proto"
+	"io"
 )
 
 type Writer interface {
-    WriteMsg(proto.Message) error
+	WriteMsg(proto.Message) error
 }
 
 type WriteCloser interface {
-    Writer
-    io.Closer
+	Writer
+	io.Closer
 }
 
 type Reader interface {
-    ReadMsg(msg proto.Message) error
+	ReadMsg(msg proto.Message) error
 }
 
 type ReadCloser interface {
-    Reader
-    io.Closer
+	Reader
+	io.Closer
 }
 
 type marshaler interface {
-    MarshalTo(data []byte) (n int, err error)
-    Size() (n int)
+	MarshalTo(data []byte) (n int, err error)
+	Size() (n int)
 }

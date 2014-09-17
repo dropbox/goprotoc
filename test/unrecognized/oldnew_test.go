@@ -27,100 +27,100 @@
 package unrecognized
 
 import (
-    dropbox_gogoprotobuf_proto "github.com/dropbox/goprotoc/proto"
-    math_rand "math/rand"
-    "testing"
-    time "time"
+	dropbox_gogoprotobuf_proto "github.com/dropbox/goprotoc/proto"
+	math_rand "math/rand"
+	"testing"
+	time "time"
 )
 
 func TestNewOld(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    newer := NewPopulatedA(popr, true)
-    data1, err := dropbox_gogoprotobuf_proto.Marshal(newer)
-    if err != nil {
-        panic(err)
-    }
-    older := &OldA{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data1, older); err != nil {
-        panic(err)
-    }
-    data2, err := dropbox_gogoprotobuf_proto.Marshal(older)
-    if err != nil {
-        panic(err)
-    }
-    bluer := &A{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data2, bluer); err != nil {
-        panic(err)
-    }
-    if err := newer.VerboseEqual(bluer); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", newer, bluer, err)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	newer := NewPopulatedA(popr, true)
+	data1, err := dropbox_gogoprotobuf_proto.Marshal(newer)
+	if err != nil {
+		panic(err)
+	}
+	older := &OldA{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data1, older); err != nil {
+		panic(err)
+	}
+	data2, err := dropbox_gogoprotobuf_proto.Marshal(older)
+	if err != nil {
+		panic(err)
+	}
+	bluer := &A{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data2, bluer); err != nil {
+		panic(err)
+	}
+	if err := newer.VerboseEqual(bluer); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", newer, bluer, err)
+	}
 }
 
 func TestOldNew(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    older := NewPopulatedOldA(popr, true)
-    data1, err := dropbox_gogoprotobuf_proto.Marshal(older)
-    if err != nil {
-        panic(err)
-    }
-    newer := &A{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data1, newer); err != nil {
-        panic(err)
-    }
-    data2, err := dropbox_gogoprotobuf_proto.Marshal(newer)
-    if err != nil {
-        panic(err)
-    }
-    bluer := &OldA{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data2, bluer); err != nil {
-        panic(err)
-    }
-    if err := older.VerboseEqual(bluer); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", older, bluer, err)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	older := NewPopulatedOldA(popr, true)
+	data1, err := dropbox_gogoprotobuf_proto.Marshal(older)
+	if err != nil {
+		panic(err)
+	}
+	newer := &A{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data1, newer); err != nil {
+		panic(err)
+	}
+	data2, err := dropbox_gogoprotobuf_proto.Marshal(newer)
+	if err != nil {
+		panic(err)
+	}
+	bluer := &OldA{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data2, bluer); err != nil {
+		panic(err)
+	}
+	if err := older.VerboseEqual(bluer); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", older, bluer, err)
+	}
 }
 
 func TestOldNewOldNew(t *testing.T) {
-    popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-    older := NewPopulatedOldA(popr, true)
-    data1, err := dropbox_gogoprotobuf_proto.Marshal(older)
-    if err != nil {
-        panic(err)
-    }
-    newer := &A{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data1, newer); err != nil {
-        panic(err)
-    }
-    data2, err := dropbox_gogoprotobuf_proto.Marshal(newer)
-    if err != nil {
-        panic(err)
-    }
-    bluer := &OldA{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data2, bluer); err != nil {
-        panic(err)
-    }
-    if err := older.VerboseEqual(bluer); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", older, bluer, err)
-    }
+	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
+	older := NewPopulatedOldA(popr, true)
+	data1, err := dropbox_gogoprotobuf_proto.Marshal(older)
+	if err != nil {
+		panic(err)
+	}
+	newer := &A{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data1, newer); err != nil {
+		panic(err)
+	}
+	data2, err := dropbox_gogoprotobuf_proto.Marshal(newer)
+	if err != nil {
+		panic(err)
+	}
+	bluer := &OldA{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data2, bluer); err != nil {
+		panic(err)
+	}
+	if err := older.VerboseEqual(bluer); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", older, bluer, err)
+	}
 
-    data3, err := dropbox_gogoprotobuf_proto.Marshal(bluer)
-    if err != nil {
-        panic(err)
-    }
-    purple := &A{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data3, purple); err != nil {
-        panic(err)
-    }
-    data4, err := dropbox_gogoprotobuf_proto.Marshal(purple)
-    if err != nil {
-        panic(err)
-    }
-    magenta := &OldA{}
-    if err := dropbox_gogoprotobuf_proto.Unmarshal(data4, magenta); err != nil {
-        panic(err)
-    }
-    if err := older.VerboseEqual(magenta); err != nil {
-        t.Fatalf("%#v !VerboseProto %#v, since %v", older, magenta, err)
-    }
+	data3, err := dropbox_gogoprotobuf_proto.Marshal(bluer)
+	if err != nil {
+		panic(err)
+	}
+	purple := &A{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data3, purple); err != nil {
+		panic(err)
+	}
+	data4, err := dropbox_gogoprotobuf_proto.Marshal(purple)
+	if err != nil {
+		panic(err)
+	}
+	magenta := &OldA{}
+	if err := dropbox_gogoprotobuf_proto.Unmarshal(data4, magenta); err != nil {
+		panic(err)
+	}
+	if err := older.VerboseEqual(magenta); err != nil {
+		t.Fatalf("%#v !VerboseProto %#v, since %v", older, magenta, err)
+	}
 }

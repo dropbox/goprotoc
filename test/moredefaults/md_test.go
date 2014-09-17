@@ -27,33 +27,33 @@
 package moredefaults
 
 import (
-    "testing"
+	"testing"
 
-    test "github.com/dropbox/goprotoc/test/example"
+	test "github.com/dropbox/goprotoc/test/example"
 )
 
 func TestDefaults(t *testing.T) {
-    b := MoreDefaultsB{}
-    aa := test.A{}
-    a := &MoreDefaultsA{}
-    b2 := a.GetB2()
-    a2 := a.GetA2()
-    if a.GetField1() != 1234 {
-        t.Fatalf("Field1 wrong")
-    }
-    if a.GetField2() != 0 {
-        t.Fatalf("Field2 wrong")
-    }
-    if a.GetB1() != nil {
-        t.Fatalf("B1 wrong")
-    }
-    if b2.GetField1() != b.GetField1() {
-        t.Fatalf("B2 wrong")
-    }
-    if a.GetA1() != nil {
-        t.Fatalf("A1 wrong")
-    }
-    if a2.GetNumber() != aa.GetNumber() {
-        t.Fatalf("A2 wrong")
-    }
+	b := MoreDefaultsB{}
+	aa := test.A{}
+	a := &MoreDefaultsA{}
+	b2 := a.GetB2()
+	a2 := a.GetA2()
+	if a.GetField1() != 1234 {
+		t.Fatalf("Field1 wrong")
+	}
+	if a.GetField2() != 0 {
+		t.Fatalf("Field2 wrong")
+	}
+	if a.GetB1() != nil {
+		t.Fatalf("B1 wrong")
+	}
+	if b2.GetField1() != b.GetField1() {
+		t.Fatalf("B2 wrong")
+	}
+	if a.GetA1() != nil {
+		t.Fatalf("A1 wrong")
+	}
+	if a2.GetNumber() != aa.GetNumber() {
+		t.Fatalf("A2 wrong")
+	}
 }

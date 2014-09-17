@@ -27,55 +27,55 @@
 package union
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/plugin/testgen"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/plugin/testgen"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type test struct {
-    *generator.Generator
+	*generator.Generator
 }
 
 func NewTest(g *generator.Generator) testgen.TestPlugin {
-    return &test{g}
+	return &test{g}
 }
 
 func (p *test) Generate(imports generator.PluginImports, file *generator.FileDescriptor) bool {
-    used := false
-    randPkg := imports.NewImport("math/rand")
-    timePkg := imports.NewImport("time")
-    testingPkg := imports.NewImport("testing")
-    for _, message := range file.Messages() {
-        if !gogoproto.IsUnion(file.FileDescriptorProto, message.DescriptorProto) ||
-            !gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
-        used = true
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
+	used := false
+	randPkg := imports.NewImport("math/rand")
+	timePkg := imports.NewImport("time")
+	testingPkg := imports.NewImport("testing")
+	for _, message := range file.Messages() {
+		if !gogoproto.IsUnion(file.FileDescriptorProto, message.DescriptorProto) ||
+			!gogoproto.HasTestGen(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
+		used = true
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
 
-        p.P(`func Test`, ccTypeName, `OnlyOne(t *`, testingPkg.Use(), `.T) {`)
-        p.In()
-        p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
-        p.P(`p := NewPopulated`, ccTypeName, `(popr, true)`)
-        p.P(`v := p.GetValue()`)
-        p.P(`msg := &`, ccTypeName, `{}`)
-        p.P(`if !msg.SetValue(v) {`)
-        p.In()
-        p.P(`t.Fatalf("OnlyOne: Could not set Value")`)
-        p.Out()
-        p.P(`}`)
-        p.P(`if !p.Equal(msg) {`)
-        p.In()
-        p.P(`t.Fatalf("%#v !OnlyOne Equal %#v", msg, p)`)
-        p.Out()
-        p.P(`}`)
-        p.Out()
-        p.P(`}`)
+		p.P(`func Test`, ccTypeName, `OnlyOne(t *`, testingPkg.Use(), `.T) {`)
+		p.In()
+		p.P(`popr := `, randPkg.Use(), `.New(`, randPkg.Use(), `.NewSource(`, timePkg.Use(), `.Now().UnixNano()))`)
+		p.P(`p := NewPopulated`, ccTypeName, `(popr, true)`)
+		p.P(`v := p.GetValue()`)
+		p.P(`msg := &`, ccTypeName, `{}`)
+		p.P(`if !msg.SetValue(v) {`)
+		p.In()
+		p.P(`t.Fatalf("OnlyOne: Could not set Value")`)
+		p.Out()
+		p.P(`}`)
+		p.P(`if !p.Equal(msg) {`)
+		p.In()
+		p.P(`t.Fatalf("%#v !OnlyOne Equal %#v", msg, p)`)
+		p.Out()
+		p.P(`}`)
+		p.Out()
+		p.P(`}`)
 
-    }
-    return used
+	}
+	return used
 }
 
 func init() {
-    testgen.RegisterTestPlugin(NewTest)
+	testgen.RegisterTestPlugin(NewTest)
 }

@@ -29,43 +29,43 @@
 package parser
 
 import (
-    "github.com/dropbox/goprotoc/proto"
-    descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
-    "os/exec"
-    "strings"
+	"github.com/dropbox/goprotoc/proto"
+	descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+	"os/exec"
+	"strings"
 )
 
 type errCmd struct {
-    output []byte
-    err    error
+	output []byte
+	err    error
 }
 
 func (this *errCmd) Error() string {
-    return this.err.Error() + ":" + string(this.output)
+	return this.err.Error() + ":" + string(this.output)
 }
 
 func ParseFile(filename string, paths ...string) (*descriptor.FileDescriptorSet, error) {
-    return parseFile(filename, false, true, paths...)
+	return parseFile(filename, false, true, paths...)
 }
 
 func parseFile(filename string, includeSourceInfo bool, includeImports bool, paths ...string) (*descriptor.FileDescriptorSet, error) {
-    args := []string{"--proto_path=" + strings.Join(paths, ":")}
-    if includeSourceInfo {
-        args = append(args, "--include_source_info")
-    }
-    if includeImports {
-        args = append(args, "--include_imports")
-    }
-    args = append(args, "--descriptor_set_out=/dev/stdout")
-    args = append(args, filename)
-    cmd := exec.Command("protoc", args...)
-    data, err := cmd.CombinedOutput()
-    if err != nil {
-        return nil, &errCmd{data, err}
-    }
-    fileDesc := &descriptor.FileDescriptorSet{}
-    if err := proto.Unmarshal(data, fileDesc); err != nil {
-        return nil, err
-    }
-    return fileDesc, nil
+	args := []string{"--proto_path=" + strings.Join(paths, ":")}
+	if includeSourceInfo {
+		args = append(args, "--include_source_info")
+	}
+	if includeImports {
+		args = append(args, "--include_imports")
+	}
+	args = append(args, "--descriptor_set_out=/dev/stdout")
+	args = append(args, filename)
+	cmd := exec.Command("protoc", args...)
+	data, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, &errCmd{data, err}
+	}
+	fileDesc := &descriptor.FileDescriptorSet{}
+	if err := proto.Unmarshal(data, fileDesc); err != nil {
+		return nil, err
+	}
+	return fileDesc, nil
 }

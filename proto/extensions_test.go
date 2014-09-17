@@ -32,29 +32,29 @@
 package proto_test
 
 import (
-    "testing"
+	"testing"
 
-    pb "./testdata"
-    "github.com/dropbox/goprotoc/proto"
+	pb "./testdata"
+	"github.com/dropbox/goprotoc/proto"
 )
 
 func TestGetExtensionsWithMissingExtensions(t *testing.T) {
-    msg := &pb.MyMessage{}
-    ext1 := &pb.Ext{}
-    if err := proto.SetExtension(msg, pb.E_Ext_More, ext1); err != nil {
-        t.Fatalf("Could not set ext1: %s", ext1)
-    }
-    exts, err := proto.GetExtensions(msg, []*proto.ExtensionDesc{
-        pb.E_Ext_More,
-        pb.E_Ext_Text,
-    })
-    if err != nil {
-        t.Fatalf("GetExtensions() failed: %s", err)
-    }
-    if exts[0] != ext1 {
-        t.Errorf("ext1 not in returned extensions: %T %v", exts[0], exts[0])
-    }
-    if exts[1] != nil {
-        t.Errorf("ext2 in returned extensions: %T %v", exts[1], exts[1])
-    }
+	msg := &pb.MyMessage{}
+	ext1 := &pb.Ext{}
+	if err := proto.SetExtension(msg, pb.E_Ext_More, ext1); err != nil {
+		t.Fatalf("Could not set ext1: %s", ext1)
+	}
+	exts, err := proto.GetExtensions(msg, []*proto.ExtensionDesc{
+		pb.E_Ext_More,
+		pb.E_Ext_Text,
+	})
+	if err != nil {
+		t.Fatalf("GetExtensions() failed: %s", err)
+	}
+	if exts[0] != ext1 {
+		t.Errorf("ext1 not in returned extensions: %T %v", exts[0], exts[0])
+	}
+	if exts[1] != nil {
+		t.Errorf("ext2 in returned extensions: %T %v", exts[1], exts[1])
+	}
 }

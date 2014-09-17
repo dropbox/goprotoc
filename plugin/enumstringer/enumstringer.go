@@ -38,65 +38,65 @@ This package is subject to change.
 package enumstringer
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type enumstringer struct {
-    *generator.Generator
-    generator.PluginImports
-    atleastOne bool
-    localName  string
+	*generator.Generator
+	generator.PluginImports
+	atleastOne bool
+	localName  string
 }
 
 func NewEnumStringer() *enumstringer {
-    return &enumstringer{}
+	return &enumstringer{}
 }
 
 func (p *enumstringer) Name() string {
-    return "enumstringer"
+	return "enumstringer"
 }
 
 func (p *enumstringer) Init(g *generator.Generator) {
-    p.Generator = g
+	p.Generator = g
 }
 
 func (p *enumstringer) Generate(file *generator.FileDescriptor) {
-    p.PluginImports = generator.NewPluginImports(p.Generator)
-    p.atleastOne = false
+	p.PluginImports = generator.NewPluginImports(p.Generator)
+	p.atleastOne = false
 
-    p.localName = generator.FileName(file)
+	p.localName = generator.FileName(file)
 
-    strconvPkg := p.NewImport("strconv")
+	strconvPkg := p.NewImport("strconv")
 
-    for _, enum := range file.Enums() {
-        if !gogoproto.IsEnumStringer(file.FileDescriptorProto, enum.EnumDescriptorProto) {
-            continue
-        }
-        if gogoproto.IsGoEnumStringer(file.FileDescriptorProto, enum.EnumDescriptorProto) {
-            panic("old enum string method needs to be disabled, please use gogoproto.old_enum_stringer or gogoproto.old_enum_string_all and set it to false")
-        }
-        p.atleastOne = true
-        ccTypeName := generator.CamelCaseSlice(enum.TypeName())
-        p.P("func (x ", ccTypeName, ") String() string {")
-        p.In()
-        p.P(`s, ok := `, ccTypeName, `_name[int32(x)]`)
-        p.P(`if ok {`)
-        p.In()
-        p.P(`return s`)
-        p.Out()
-        p.P(`}`)
-        p.P(`return `, strconvPkg.Use(), `.Itoa(int(x))`)
-        p.Out()
-        p.P(`}`)
-    }
+	for _, enum := range file.Enums() {
+		if !gogoproto.IsEnumStringer(file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			continue
+		}
+		if gogoproto.IsGoEnumStringer(file.FileDescriptorProto, enum.EnumDescriptorProto) {
+			panic("old enum string method needs to be disabled, please use gogoproto.old_enum_stringer or gogoproto.old_enum_string_all and set it to false")
+		}
+		p.atleastOne = true
+		ccTypeName := generator.CamelCaseSlice(enum.TypeName())
+		p.P("func (x ", ccTypeName, ") String() string {")
+		p.In()
+		p.P(`s, ok := `, ccTypeName, `_name[int32(x)]`)
+		p.P(`if ok {`)
+		p.In()
+		p.P(`return s`)
+		p.Out()
+		p.P(`}`)
+		p.P(`return `, strconvPkg.Use(), `.Itoa(int(x))`)
+		p.Out()
+		p.P(`}`)
+	}
 
-    if !p.atleastOne {
-        return
-    }
+	if !p.atleastOne {
+		return
+	}
 
 }
 
 func init() {
-    generator.RegisterPlugin(NewEnumStringer())
+	generator.RegisterPlugin(NewEnumStringer())
 }

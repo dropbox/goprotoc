@@ -44,143 +44,143 @@ For incorrect usage of embed with tests see:
 package embedcheck
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
-    "fmt"
-    "os"
+	"fmt"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"os"
 )
 
 type plugin struct {
-    *generator.Generator
+	*generator.Generator
 }
 
 func NewPlugin() *plugin {
-    return &plugin{}
+	return &plugin{}
 }
 
 func (p *plugin) Name() string {
-    return "embedcheck"
+	return "embedcheck"
 }
 
 func (p *plugin) Init(g *generator.Generator) {
-    p.Generator = g
+	p.Generator = g
 }
 
 var overwriters []map[string]gogoproto.EnableFunc = []map[string]gogoproto.EnableFunc{
-    {
-        "stringer": gogoproto.IsStringer,
-    },
-    {
-        "equal": gogoproto.HasEqual,
-    },
-    {
-        "verboseequal": gogoproto.HasVerboseEqual,
-    },
-    {
-        "size": gogoproto.IsSizer,
-    },
-    {
-        "unmarshaler": gogoproto.IsUnmarshaler,
-    },
-    {
-        "marshaler": gogoproto.IsMarshaler,
-    },
+	{
+		"stringer": gogoproto.IsStringer,
+	},
+	{
+		"equal": gogoproto.HasEqual,
+	},
+	{
+		"verboseequal": gogoproto.HasVerboseEqual,
+	},
+	{
+		"size": gogoproto.IsSizer,
+	},
+	{
+		"unmarshaler": gogoproto.IsUnmarshaler,
+	},
+	{
+		"marshaler": gogoproto.IsMarshaler,
+	},
 }
 
 func (p *plugin) Generate(file *generator.FileDescriptor) {
-    for _, msg := range file.Messages() {
-        for _, os := range overwriters {
-            possible := true
-            for _, overwriter := range os {
-                if overwriter(file.FileDescriptorProto, msg.DescriptorProto) {
-                    possible = false
-                }
-            }
-            if possible {
-                p.checkOverwrite(msg, os)
-            }
-        }
-        p.checkNameSpace(msg)
-        for _, field := range msg.GetField() {
-            if gogoproto.IsEmbed(field) && gogoproto.IsCustomName(field) {
-                fmt.Fprintf(os.Stderr, "ERROR: field %v with custom name %v cannot be embedded", *field.Name, gogoproto.GetCustomName(field))
-                os.Exit(1)
-            }
-        }
-        p.checkRepeated(msg)
-    }
-    for _, e := range file.GetExtension() {
-        if gogoproto.IsEmbed(e) {
-            fmt.Fprintf(os.Stderr, "ERROR: extended field %v cannot be embedded", generator.CamelCase(*e.Name))
-            os.Exit(1)
-        }
-    }
+	for _, msg := range file.Messages() {
+		for _, os := range overwriters {
+			possible := true
+			for _, overwriter := range os {
+				if overwriter(file.FileDescriptorProto, msg.DescriptorProto) {
+					possible = false
+				}
+			}
+			if possible {
+				p.checkOverwrite(msg, os)
+			}
+		}
+		p.checkNameSpace(msg)
+		for _, field := range msg.GetField() {
+			if gogoproto.IsEmbed(field) && gogoproto.IsCustomName(field) {
+				fmt.Fprintf(os.Stderr, "ERROR: field %v with custom name %v cannot be embedded", *field.Name, gogoproto.GetCustomName(field))
+				os.Exit(1)
+			}
+		}
+		p.checkRepeated(msg)
+	}
+	for _, e := range file.GetExtension() {
+		if gogoproto.IsEmbed(e) {
+			fmt.Fprintf(os.Stderr, "ERROR: extended field %v cannot be embedded", generator.CamelCase(*e.Name))
+			os.Exit(1)
+		}
+	}
 }
 
 func (p *plugin) checkNameSpace(message *generator.Descriptor) map[string]bool {
-    ccTypeName := generator.CamelCaseSlice(message.TypeName())
-    names := make(map[string]bool)
-    for _, field := range message.Field {
-        fieldname := generator.CamelCase(*field.Name)
-        if gogoproto.IsEmbed(field) {
-            desc := p.ObjectNamed(field.GetTypeName())
-            moreNames := p.checkNameSpace(desc.(*generator.Descriptor))
-            for another := range moreNames {
-                if names[another] {
-                    fmt.Fprintf(os.Stderr, "ERROR: duplicate embedded fieldname %v in type %v\n", fieldname, ccTypeName)
-                    os.Exit(1)
-                }
-                names[another] = true
-            }
-        } else {
-            if names[fieldname] {
-                fmt.Fprintf(os.Stderr, "ERROR: duplicate embedded fieldname %v in type %v\n", fieldname, ccTypeName)
-                os.Exit(1)
-            }
-            names[fieldname] = true
-        }
-    }
-    return names
+	ccTypeName := generator.CamelCaseSlice(message.TypeName())
+	names := make(map[string]bool)
+	for _, field := range message.Field {
+		fieldname := generator.CamelCase(*field.Name)
+		if gogoproto.IsEmbed(field) {
+			desc := p.ObjectNamed(field.GetTypeName())
+			moreNames := p.checkNameSpace(desc.(*generator.Descriptor))
+			for another := range moreNames {
+				if names[another] {
+					fmt.Fprintf(os.Stderr, "ERROR: duplicate embedded fieldname %v in type %v\n", fieldname, ccTypeName)
+					os.Exit(1)
+				}
+				names[another] = true
+			}
+		} else {
+			if names[fieldname] {
+				fmt.Fprintf(os.Stderr, "ERROR: duplicate embedded fieldname %v in type %v\n", fieldname, ccTypeName)
+				os.Exit(1)
+			}
+			names[fieldname] = true
+		}
+	}
+	return names
 }
 
 func (p *plugin) checkOverwrite(message *generator.Descriptor, enablers map[string]gogoproto.EnableFunc) {
-    ccTypeName := generator.CamelCaseSlice(message.TypeName())
-    names := []string{}
-    for name := range enablers {
-        names = append(names, name)
-    }
-    for _, field := range message.Field {
-        if gogoproto.IsEmbed(field) {
-            fieldname := generator.CamelCase(*field.Name)
-            desc := p.ObjectNamed(field.GetTypeName())
-            msg := desc.(*generator.Descriptor)
-            for errStr, enabled := range enablers {
-                if enabled(msg.File(), msg.DescriptorProto) {
-                    fmt.Fprintf(os.Stderr, "WARNING: found non-%v %v with embedded %v %v\n", names, ccTypeName, errStr, fieldname)
-                }
-            }
-            p.checkOverwrite(msg, enablers)
-        }
-    }
+	ccTypeName := generator.CamelCaseSlice(message.TypeName())
+	names := []string{}
+	for name := range enablers {
+		names = append(names, name)
+	}
+	for _, field := range message.Field {
+		if gogoproto.IsEmbed(field) {
+			fieldname := generator.CamelCase(*field.Name)
+			desc := p.ObjectNamed(field.GetTypeName())
+			msg := desc.(*generator.Descriptor)
+			for errStr, enabled := range enablers {
+				if enabled(msg.File(), msg.DescriptorProto) {
+					fmt.Fprintf(os.Stderr, "WARNING: found non-%v %v with embedded %v %v\n", names, ccTypeName, errStr, fieldname)
+				}
+			}
+			p.checkOverwrite(msg, enablers)
+		}
+	}
 }
 
 func (p *plugin) checkRepeated(message *generator.Descriptor) {
-    ccTypeName := generator.CamelCaseSlice(message.TypeName())
-    for _, field := range message.Field {
-        if !gogoproto.IsEmbed(field) {
-            continue
-        }
-        if !field.IsRepeated() {
-            continue
-        }
-        fieldname := generator.CamelCase(*field.Name)
-        fmt.Fprintf(os.Stderr, "ERROR: found repeated embedded field %s in message %s\n", fieldname, ccTypeName)
-        os.Exit(1)
-    }
+	ccTypeName := generator.CamelCaseSlice(message.TypeName())
+	for _, field := range message.Field {
+		if !gogoproto.IsEmbed(field) {
+			continue
+		}
+		if !field.IsRepeated() {
+			continue
+		}
+		fieldname := generator.CamelCase(*field.Name)
+		fmt.Fprintf(os.Stderr, "ERROR: found repeated embedded field %s in message %s\n", fieldname, ccTypeName)
+		os.Exit(1)
+	}
 }
 
 func (p *plugin) GenerateImports(*generator.FileDescriptor) {}
 
 func init() {
-    generator.RegisterPlugin(NewPlugin())
+	generator.RegisterPlugin(NewPlugin())
 }

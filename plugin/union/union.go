@@ -109,97 +109,97 @@ and the following test code:
 package union
 
 import (
-    "github.com/dropbox/goprotoc/gogoproto"
-    "github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
+	"github.com/dropbox/goprotoc/gogoproto"
+	"github.com/dropbox/goprotoc/protoc-gen-dgo/generator"
 )
 
 type union struct {
-    *generator.Generator
-    generator.PluginImports
+	*generator.Generator
+	generator.PluginImports
 }
 
 func NewUnion() *union {
-    return &union{}
+	return &union{}
 }
 
 func (p *union) Name() string {
-    return "union"
+	return "union"
 }
 
 func (p *union) Init(g *generator.Generator) {
-    p.Generator = g
+	p.Generator = g
 }
 
 func (p *union) Generate(file *generator.FileDescriptor) {
-    p.PluginImports = generator.NewPluginImports(p.Generator)
+	p.PluginImports = generator.NewPluginImports(p.Generator)
 
-    for _, message := range file.Messages() {
-        if !gogoproto.IsUnion(file.FileDescriptorProto, message.DescriptorProto) {
-            continue
-        }
-        if message.DescriptorProto.HasExtension() {
-            panic("onlyone does not currently support extensions")
-        }
+	for _, message := range file.Messages() {
+		if !gogoproto.IsUnion(file.FileDescriptorProto, message.DescriptorProto) {
+			continue
+		}
+		if message.DescriptorProto.HasExtension() {
+			panic("onlyone does not currently support extensions")
+		}
 
-        ccTypeName := generator.CamelCaseSlice(message.TypeName())
-        p.P(`func (this *`, ccTypeName, `) GetValue() interface{} {`)
-        p.In()
-        for _, field := range message.Field {
-            fieldname := p.GetFieldName(message, field)
-            if fieldname == "Value" {
-                panic("cannot have a onlyone message " + ccTypeName + " with a field named Value")
-            }
-            p.P(`if this.`, generator.SetterName(fieldname), ` == true {`)
-            p.In()
-            p.P(`return this.`, fieldname)
-            p.Out()
-            p.P(`}`)
-        }
-        p.P(`return nil`)
-        p.Out()
-        p.P(`}`)
-        p.P(``)
-        p.P(`func (this *`, ccTypeName, `) SetValue(value interface{}) bool {`)
-        p.In()
-        p.P(`switch vt := value.(type) {`)
-        p.In()
-        for _, field := range message.Field {
-            fieldname := p.GetFieldName(message, field)
-            goTyp, _ := p.GoType(message, field)
-            p.P(`case `, goTyp, `:`)
-            p.In()
-            p.P(`this.`, generator.SetterName(fieldname), ` = true`)
-            p.P(`this.`, fieldname, ` = vt`)
-            p.Out()
-        }
-        p.P(`default:`)
-        p.In()
-        for _, field := range message.Field {
-            fieldname := p.GetFieldName(message, field)
-            if field.IsMessage() {
-                goTyp, _ := p.GoType(message, field)
-                obj := p.ObjectNamed(field.GetTypeName()).(*generator.Descriptor)
+		ccTypeName := generator.CamelCaseSlice(message.TypeName())
+		p.P(`func (this *`, ccTypeName, `) GetValue() interface{} {`)
+		p.In()
+		for _, field := range message.Field {
+			fieldname := p.GetFieldName(message, field)
+			if fieldname == "Value" {
+				panic("cannot have a onlyone message " + ccTypeName + " with a field named Value")
+			}
+			p.P(`if this.`, generator.SetterName(fieldname), ` == true {`)
+			p.In()
+			p.P(`return this.`, fieldname)
+			p.Out()
+			p.P(`}`)
+		}
+		p.P(`return nil`)
+		p.Out()
+		p.P(`}`)
+		p.P(``)
+		p.P(`func (this *`, ccTypeName, `) SetValue(value interface{}) bool {`)
+		p.In()
+		p.P(`switch vt := value.(type) {`)
+		p.In()
+		for _, field := range message.Field {
+			fieldname := p.GetFieldName(message, field)
+			goTyp, _ := p.GoType(message, field)
+			p.P(`case `, goTyp, `:`)
+			p.In()
+			p.P(`this.`, generator.SetterName(fieldname), ` = true`)
+			p.P(`this.`, fieldname, ` = vt`)
+			p.Out()
+		}
+		p.P(`default:`)
+		p.In()
+		for _, field := range message.Field {
+			fieldname := p.GetFieldName(message, field)
+			if field.IsMessage() {
+				goTyp, _ := p.GoType(message, field)
+				obj := p.ObjectNamed(field.GetTypeName()).(*generator.Descriptor)
 
-                if gogoproto.IsUnion(obj.File(), obj.DescriptorProto) {
-                    p.P(`this.`, fieldname, ` = new(`, generator.GoTypeToName(goTyp), `)`)
-                    p.P(`if set := this.`, fieldname, `.SetValue(value); set {`)
-                    p.In()
-                    p.P(`return true`)
-                    p.Out()
-                    p.P(`}`)
-                    p.P(`this.`, fieldname, ` = nil`)
-                }
-            }
-        }
-        p.P(`return false`)
-        p.Out()
-        p.P(`}`)
-        p.P(`return true`)
-        p.Out()
-        p.P(`}`)
-    }
+				if gogoproto.IsUnion(obj.File(), obj.DescriptorProto) {
+					p.P(`this.`, fieldname, ` = new(`, generator.GoTypeToName(goTyp), `)`)
+					p.P(`if set := this.`, fieldname, `.SetValue(value); set {`)
+					p.In()
+					p.P(`return true`)
+					p.Out()
+					p.P(`}`)
+					p.P(`this.`, fieldname, ` = nil`)
+				}
+			}
+		}
+		p.P(`return false`)
+		p.Out()
+		p.P(`}`)
+		p.P(`return true`)
+		p.Out()
+		p.P(`}`)
+	}
 }
 
 func init() {
-    generator.RegisterPlugin(NewUnion())
+	generator.RegisterPlugin(NewUnion())
 }
