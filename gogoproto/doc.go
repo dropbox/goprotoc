@@ -63,7 +63,7 @@ The following message:
 	message A {
 		optional string Description = 1 [(gogoproto.nullable) = false];
 		optional int64 Number = 2 [(gogoproto.nullable) = false];
-		optional int64 Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id", (gogoproto.nullable) = false];
+		optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uuid", (gogoproto.nullable) = false];
 	}
 
 Will generate a go struct which looks a lot like this:
@@ -71,23 +71,26 @@ Will generate a go struct which looks a lot like this:
 	type A struct {
 		Description string
 		Number      int64
-		Id          dropbox_gogoprotobuf_test.Id
+		Id          dropbox_gogoprotobuf_test_custom.Uuid
 	}
 
-You will also see a custom type which marshals to a bool
+You will see there are no pointers, since all fields are non-nullable.
+You will also see a custom type which marshals to a string.
+Be warned it is your responsibility to test your custom types thoroughly.
+You should think of every possible empty and nil case for your marshaling, unmarshaling and size methods.
 
 Next we will embed the message A in message B.
 
 	message B {
 		optional A A = 1 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
-		repeated bool G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Truth", (gogoproto.nullable) = false];
+		repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
 	}
 
 See below that A is embedded in B.
 
 	type B struct {
 		A
-		G []dropbox_gogoprotobuf_test.Truth
+		G []dropbox_gogoprotobuf_test_custom.Uint128
 	}
 
 Also see the repeated custom type.

@@ -50,53 +50,54 @@ Btw all the output can be seen at:
 
 The following message:
 
-  message B {
-    option (gogoproto.description) = true;
-    optional string A = 1 [(gogoproto.embed) = true];
-    repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
-  }
+message B {
+	option (gogoproto.description) = true;
+	optional A A = 1 [(gogoproto.embed) = true];
+	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
+}
 
 the marshalto code will generate the following code:
 
-    func (m *B) Marshal() (data []byte, err error) {
-        size := m.Size()
-        data = make([]byte, size)
-        n, err := m.MarshalToUsingCachedSize(data)
-        if err != nil {
-            return nil, err
-        }
-        return data[:n], nil
-    }
+  func (m *B) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+  }
 
-    func (m *B) MarshalTo(data []byte) (n int, err error) {
-        m.Size()
-        return m.MarshalToUsingCachedSize(data)
-    }
-
-    func (m *B) MarshalToUsingCachedSize(data []byte) (n int, err error) {
-        var i int
-        _ = i
-        var l int
-        _ = l
-        if m.xxx_IsASet {
-            data[i] = 0xa
-            i++
-            i = encodeVarintCustom(data, i, uint64(len(m.a)))
-            i += copy(data[i:], m.a)
-        }
-        if m.xxx_LenG > 0 {
-            for idx := 0; idx < m.xxx_LenG; idx++ {
-                num := m.g[idx]
-                data[i] = 0x10
-                i++
-                i = encodeVarintCustom(data, i, uint64(num))
-            }
-        }
-        if m.XXX_unrecognized != nil {
-            i += copy(data[i:], m.XXX_unrecognized)
-        }
-        return i, nil
-    }
+  func (m *B) MarshalTo(data []byte) (n int, err error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	data[i] = 0xa
+	i++
+	i = encodeVarintExample(data, i, uint64(m.A.Size()))
+	n2, err := m.A.MarshalTo(data[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n2
+	if len(m.G) > 0 {
+		for _, msg := range m.G {
+			data[i] = 0x12
+			i++
+			i = encodeVarintExample(data, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(data[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+  }
 
 As shown above Marshal calculates the size of the not yet marshalled message
 and allocates the appropriate buffer.
@@ -112,10 +113,10 @@ The generated tests and benchmarks will keep you safe and show that this is real
 package generator
 
 import (
-    "fmt"
     "github.com/dropbox/goprotoc/gogoproto"
     "github.com/dropbox/goprotoc/proto"
     descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
+    "fmt"
     "strconv"
     "strings"
 )
@@ -274,7 +275,7 @@ func (g *Generator) generateMarshalto(file *FileDescriptor) {
                     g.P(`for idx := 0; idx < m.`, sizerName, `; idx++ {`)
                     g.In()
                     g.P(`num := m.`, fieldname, `[idx]`)
-                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float64bits(float64(num))`)
+                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float64bits(num)`)
                     g.encodeFixed64("f" + numGen.Current())
                     g.Out()
                     g.P(`}`)
@@ -283,13 +284,13 @@ func (g *Generator) generateMarshalto(file *FileDescriptor) {
                     g.In()
                     g.P(`num := m.`, fieldname, `[idx]`)
                     g.encodeKey(fieldNumber, wireType)
-                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float64bits(float64(num))`)
+                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float64bits(num)`)
                     g.encodeFixed64("f" + numGen.Current())
                     g.Out()
                     g.P(`}`)
                 } else {
                     g.encodeKey(fieldNumber, wireType)
-                    g.callFixed64(g.Pkg["math"], `.Float64bits(float64(m.`+fieldname, `))`)
+                    g.callFixed64(g.Pkg["math"], `.Float64bits(m.`+fieldname, `)`)
                 }
             case descriptor.FieldDescriptorProto_TYPE_FLOAT:
                 if packed {
@@ -298,7 +299,7 @@ func (g *Generator) generateMarshalto(file *FileDescriptor) {
                     g.P(`for idx := 0; idx < m.`, sizerName, `; idx++ {`)
                     g.In()
                     g.P(`num := m.`, fieldname, `[idx]`)
-                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float32bits(float32(num))`)
+                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float32bits(num)`)
                     g.encodeFixed32("f" + numGen.Current())
                     g.Out()
                     g.P(`}`)
@@ -307,13 +308,13 @@ func (g *Generator) generateMarshalto(file *FileDescriptor) {
                     g.In()
                     g.P(`num := m.`, fieldname, `[idx]`)
                     g.encodeKey(fieldNumber, wireType)
-                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float32bits(float32(num))`)
+                    g.P(`f`, numGen.Next(), ` := `, g.Pkg["math"], `.Float32bits(num)`)
                     g.encodeFixed32("f" + numGen.Current())
                     g.Out()
                     g.P(`}`)
                 } else {
                     g.encodeKey(fieldNumber, wireType)
-                    g.callFixed32(g.Pkg["math"], `.Float32bits(float32(m.`+fieldname, `))`)
+                    g.callFixed32(g.Pkg["math"], `.Float32bits(m.`+fieldname, `)`)
                 }
             case descriptor.FieldDescriptorProto_TYPE_INT64,
                 descriptor.FieldDescriptorProto_TYPE_UINT64,

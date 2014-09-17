@@ -24,47 +24,18 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package test;
+package custom
 
-import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
+import (
+    "testing"
+)
 
-option (gogoproto.gostring_all) = true;
-option (gogoproto.equal_all) = true;
-option (gogoproto.verbose_equal_all) = true;
-option (gogoproto.goproto_stringer_all) = false;
-option (gogoproto.stringer_all) =  true;
-option (gogoproto.populate_all) = true;
-option (gogoproto.testgen_all) = true;
-option (gogoproto.benchgen_all) = true;
-option (gogoproto.marshaler_all) = true;
-option (gogoproto.sizer_all) = true;
-option (gogoproto.unmarshaler_all) = true;
-
-message A {
-	option (gogoproto.face) = true;
-	option (gogoproto.goproto_getters) = false;
-	optional string Description = 1 [(gogoproto.nullable) = false];
-	optional int64 Number = 2 [(gogoproto.nullable) = false];
-	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Uuid", (gogoproto.nullable) = false];
-}
-
-message B {
-	option (gogoproto.description) = true;
-	optional A A = 1 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
-}
-
-message C {
-	optional int64 size = 1 [(gogoproto.customname) = "MySize"];
-}
-
-message U {
-	option (gogoproto.onlyone) = true;
-	optional A A = 1;
-	optional B B = 2;
-}
-
-message E {
-	option (gogoproto.goproto_extensions_map) = false;
-	extensions 1 to max;
+func TestUint128(t *testing.T) {
+    var uint128a = Uint128{0, 1}
+    buf := make([]byte, 16)
+    PutLittleEndianUint128(buf, 0, uint128a)
+    uint128b := GetLittleEndianUint128(buf, 0)
+    if !uint128a.Equal(uint128b) {
+        t.Fatalf("%v != %v", uint128a, uint128b)
+    }
 }

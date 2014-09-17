@@ -129,6 +129,7 @@ package generator
 import (
     "strings"
 
+    "github.com/dropbox/goprotoc/gogoproto"
     descriptor "github.com/dropbox/goprotoc/protoc-gen-dgo/descriptor"
 )
 
@@ -142,6 +143,14 @@ type fieldNames struct {
     field         *descriptor.FieldDescriptorProto
     message       *Descriptor
     protoType     descriptor.FieldDescriptorProto_Type
+}
+
+func isSupported(field *descriptor.FieldDescriptorProto) bool {
+    ///TODO(andrei): support custom types
+    if gogoproto.IsCustomType(field) {
+        return false
+    }
+    return true
 }
 
 func (g *Generator) generateAPI(message *Descriptor) {
@@ -160,6 +169,10 @@ func (g *Generator) generateAPI(message *Descriptor) {
         c.protoType = *field.Type
         c.fieldName = g.GetFieldName(message, field)
         c.fieldType, _ = g.GoType(message, field)
+
+        if !isSupported(field) {
+            continue
+        }
 
         switch field.GetLabel() {
         case descriptor.FieldDescriptorProto_LABEL_OPTIONAL,
@@ -458,6 +471,9 @@ func (g *Generator) genClearAll(message *Descriptor) {
     g.P(`if m != nil {`)
     g.In()
     for _, field := range message.Field {
+        if !isSupported(field) {
+            continue
+        }
         if IsMessageType(field) {
             g.genMsgClear(message, field)
         } else {

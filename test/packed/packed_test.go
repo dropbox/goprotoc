@@ -28,8 +28,8 @@ package packed
 
 import (
     "bytes"
-    "fmt"
     "github.com/dropbox/goprotoc/proto"
+    "fmt"
     math_rand "math/rand"
     "testing"
     "time"

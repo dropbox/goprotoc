@@ -227,23 +227,23 @@ message NinNestedStruct {
 }
 
 message NidOptCustom {
-	optional int64 Id = 1 [(gogoproto.customtype) = "Id", (gogoproto.nullable) = false];
-	optional double Value = 2 [(gogoproto.customtype) = "Weight", (gogoproto.nullable) = false];
+	optional bytes Id = 1 [(gogoproto.customtype) = "Uuid", (gogoproto.nullable) = false];
+	optional bytes Value = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
 }
 
 message NinOptCustom {
-	optional int64 Id = 1 [(gogoproto.customtype) = "Id"];
-	optional double Value = 2 [(gogoproto.customtype) = "Weight"];
+	optional bytes Id = 1 [(gogoproto.customtype) = "Uuid"];
+	optional bytes Value = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
 }
 
 message NidRepCustom {
-	repeated int64 Id = 1 [(gogoproto.customtype) = "Id", (gogoproto.nullable) = false];
-	repeated double Value = 2 [(gogoproto.customtype) = "Weight", (gogoproto.nullable) = false];
+	repeated bytes Id = 1 [(gogoproto.customtype) = "Uuid", (gogoproto.nullable) = false];
+	repeated bytes Value = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
 }
 
 message NinRepCustom {
-	repeated int64 Id = 1 [(gogoproto.customtype) = "Id"];
-	repeated double Value = 2 [(gogoproto.customtype) = "Weight"];
+	repeated bytes Id = 1 [(gogoproto.customtype) = "Uuid"];
+	repeated bytes Value = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
 }
 
 message NinOptNativeUnion {
@@ -518,10 +518,10 @@ message CustomNameNinStruct {
 }
 
 message CustomNameCustomType {
-	optional int64 Id = 1 [(gogoproto.customname) = "FieldA", (gogoproto.customtype) = "Id"];
-	optional double Value = 2 [(gogoproto.customname) = "FieldB", (gogoproto.customtype) = "Weight"];
-	repeated int64 Ids = 3 [(gogoproto.customname) = "FieldC", (gogoproto.customtype) = "Id"];
-	repeated double Values = 4 [(gogoproto.customname) = "FieldD", (gogoproto.customtype) = "Weight"];
+	optional bytes Id = 1 [(gogoproto.customname) = "FieldA", (gogoproto.customtype) = "Uuid"];
+	optional bytes Value = 2 [(gogoproto.customname) = "FieldB", (gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
+	repeated bytes Ids = 3 [(gogoproto.customname) = "FieldC", (gogoproto.customtype) = "Uuid"];
+	repeated bytes Values = 4 [(gogoproto.customname) = "FieldD", (gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
 }
 
 message CustomNameNinEmbeddedStructUnion {
