@@ -1,6 +1,8 @@
 # Goprotoc 
 
-Goprotoc is a new experimental go protoc buffer library, forked after GoGoProtobuf http://code.google.com/p/gogoprotobuf which extends GoProtobuf http://code.google.com/p/goprotobuf
+Goprotoc is a new experimental go protobuf compiler.  It is a fork of GoGoProtobuf http://code.google.com/p/gogoprotobuf, which extends GoProtobuf http://code.google.com/p/goprotobuf
+
+The main goal of this project is to reduce memory pressure/gc pauses and to provide useful API for accessing/mutating message fields.
 
 ### Current state
 
