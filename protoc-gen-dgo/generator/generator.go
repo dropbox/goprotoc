@@ -1042,13 +1042,11 @@ func (g *Generator) generate(file *FileDescriptor) {
 	fset := token.NewFileSet()
 	ast, err := parser.ParseFile(fset, "", g, parser.ParseComments)
 	//TODO(andrei) Figure out why the parser is failing and remove this hack
-	_ = err
-
-	/*expectedError := "expected '}', found 'package' (and 10 more errors)"
-	    if err != nil && !strings.Contains(err.Error(), expectedError) {
-			g.Fail("bad Go source code was generated:", err.Error())
-			return
-		}*/
+	expectedError := "expected '}', found 'package' (and 10 more errors)"
+	if err != nil && !strings.Contains(err.Error(), expectedError) {
+		g.Fail("bad Go source code was generated:", err.Error())
+		return
+	}
 	g.Reset()
 	err = (&printer.Config{Mode: printer.TabIndent | printer.UseSpaces, Tabwidth: 8}).Fprint(g, fset, ast)
 	if err != nil {
