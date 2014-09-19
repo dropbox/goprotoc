@@ -184,6 +184,23 @@ func (g *Generator) GeneratePlugin(p Plugin) {
 	}
 }
 
+func (g *Generator) transformCustomByteToString(file *FileDescriptor) {
+	//TODO(andrei) fix this hacky code
+	for _, message := range g.file.desc {
+		for _, field := range message.Field {
+			if !gogoproto.IsCustomType(field) {
+				continue
+			}
+			_, ctype, _ := GetCustomType(field)
+			fieldtype, _ := g.GoBaseType(field)
+			if ctype == "string" && fieldtype == "[]byte" {
+				stringType := descriptor.FieldDescriptorProto_Type(descriptor.FieldDescriptorProto_TYPE_STRING)
+				field.Type = &stringType
+			}
+		}
+	}
+}
+
 func (g *Generator) generatePlugin(file *FileDescriptor, p Plugin) {
 	g.file = g.FileOf(file.FileDescriptorProto)
 	g.usedPackages = make(map[string]bool)
@@ -244,11 +261,11 @@ func SetterName(fieldName string) string {
 	return "xxx_Is" + CamelCase(fieldName) + "Set"
 }
 
-func GetDefaultValue(protoType descriptor.FieldDescriptorProto_Type) (defaultValue string) {
-	switch protoType {
+func GetDefaultValue(field *descriptor.FieldDescriptorProto) (value string) {
+	switch *field.Type {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
 		descriptor.FieldDescriptorProto_TYPE_FLOAT:
-		return "0.0"
+		value = "0.0"
 	case descriptor.FieldDescriptorProto_TYPE_INT64,
 		descriptor.FieldDescriptorProto_TYPE_UINT64,
 		descriptor.FieldDescriptorProto_TYPE_INT32,
@@ -260,14 +277,15 @@ func GetDefaultValue(protoType descriptor.FieldDescriptorProto_Type) (defaultVal
 		descriptor.FieldDescriptorProto_TYPE_SINT32,
 		descriptor.FieldDescriptorProto_TYPE_SINT64,
 		descriptor.FieldDescriptorProto_TYPE_ENUM:
-		return "0"
+		value = "0"
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
-		return "false"
+		value = "false"
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
-		return `""`
+		value = `""`
 	default:
-		return "nil"
+		value = "nil"
 	}
+	return
 }
 
 func FileName(file *FileDescriptor) string {

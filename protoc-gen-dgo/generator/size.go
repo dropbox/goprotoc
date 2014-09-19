@@ -50,8 +50,8 @@ The following message:
 
   message B {
 	option (gogoproto.description) = true;
-	optional A A = 1 [(gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128"];
+	optional string A = 1 [(gogoproto.embed) = true];
+	repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
   }
 
 will generate the following code:
@@ -59,48 +59,51 @@ will generate the following code:
   func (m *B) Size() (n int) {
 	var l int
 	_ = l
-	l = m.A.Size()
-	n += 1 + l + sovExample(uint64(l))
-	if len(m.G) > 0 {
-		for _, e := range m.G {
-			l = e.Size()
-			n += 1 + l + sovExample(uint64(l))
+	if m.xxx_IsASet {
+		l = len(m.a)
+		n += 1 + l + sovCustom(uint64(l))
+	}
+	if m.xxx_LenG > 0 {
+		for i := 0; i < m.xxx_LenG; i++ {
+			e := m.g[i]
+			n += 1 + sovCustom(uint64(e))
 		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
+	m.xxx_sizeCached = n
 	return n
   }
 
 and the following test code:
 
-	func TestBSize(t *testing5.T) {
-		popr := math_rand5.New(math_rand5.NewSource(time5.Now().UnixNano()))
-		p := NewPopulatedB(popr, true)
-		data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
-		if err != nil {
-			panic(err)
-		}
-		size := g.Size()
-		if len(data) != size {
-			t.Fatalf("size %v != marshalled size %v", size, len(data))
-		}
+  func TestBSize(t *testing5.T) {
+	popr := math_rand5.New(math_rand5.NewSource(time5.Now().UnixNano()))
+	p := NewPopulatedB(popr, true)
+	data, err := dropbox_gogoprotobuf_proto2.Marshal(p)
+	if err != nil {
+	  panic(err)
 	}
+	size := g.Size()
+	if len(data) != size {
+	  t.Fatalf("size %v != marshalled size %v", size, len(data))
+	}
+  }
 
-	func BenchmarkBSize(b *testing5.B) {
-		popr := math_rand5.New(math_rand5.NewSource(616))
-		total := 0
-		pops := make([]*B, 1000)
-		for i := 0; i < 1000; i++ {
-			pops[i] = NewPopulatedB(popr, false)
-		}
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			total += pops[i%1000].Size()
-		}
-		b.SetBytes(int64(total / b.N))
+  func BenchmarkBSize(b *testing5.B) {
+	popr := math_rand5.New(math_rand5.NewSource(616))
+	total := 0
+	pops := make([]*B, 1000)
+	for i := 0; i < 1000; i++ {
+	  pops[i] = NewPopulatedB(popr, false)
 	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+	  total += pops[i%1000].Size()
+	}
+	b.SetBytes(int64(total / b.N))
+  }
 
 The sovExample function is a size of varint function for the example.pb.go file.
 
@@ -161,7 +164,7 @@ func (g *Generator) sizeVarint() {
 
 func (g *Generator) sizeZigZag() {
 	g.P(`func soz`, g.localName, `(x uint64) (n int) {
- 		return sov`, g.localName, `(uint64((x << 1) ^ uint64((int64(x) >> 63)))) 	
+		return sov`, g.localName, `(uint64((x << 1) ^ uint64((int64(x) >> 63)))) 	
 	}`)
 }
 
@@ -296,32 +299,17 @@ func (g *Generator) generateSize(file *FileDescriptor) {
 					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
 				}
 			case descriptor.FieldDescriptorProto_TYPE_BYTES:
-				if !gogoproto.IsCustomType(field) {
-					if repeated {
-						g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-						g.In()
-						g.P(`b := m.`, fieldname, `[i]`)
-						g.P(`l = len(b)`)
-						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-						g.Out()
-						g.P(`}`)
-					} else {
-						g.P(`l=len(m.`, fieldname, `)`)
-						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-					}
+				if repeated {
+					g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
+					g.In()
+					g.P(`b := m.`, fieldname, `[i]`)
+					g.P(`l = len(b)`)
+					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
+					g.Out()
+					g.P(`}`)
 				} else {
-					if repeated {
-						g.P(`for i := 0; i < m.`, sizerName, `; i++ {`)
-						g.In()
-						g.P(`e := m.`, fieldname, `[i]`)
-						g.P(`l=e.Size()`)
-						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-						g.Out()
-						g.P(`}`)
-					} else {
-						g.P(`l=m.`, fieldname, `.Size()`)
-						g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
-					}
+					g.P(`l=len(m.`, fieldname, `)`)
+					g.P(`n+=`, strconv.Itoa(key), `+l+sov`, g.localName, `(uint64(l))`)
 				}
 			case descriptor.FieldDescriptorProto_TYPE_SINT32,
 				descriptor.FieldDescriptorProto_TYPE_SINT64:

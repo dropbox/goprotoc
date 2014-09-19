@@ -31,27 +31,23 @@ import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
 option (gogoproto.gostring_all) = true;
 option (gogoproto.equal_all) = true;
 option (gogoproto.verbose_equal_all) = true;
-option (gogoproto.goproto_stringer_all) = false;
-option (gogoproto.stringer_all) =  true;
 option (gogoproto.populate_all) = true;
 option (gogoproto.testgen_all) = true;
 option (gogoproto.benchgen_all) = true;
-option (gogoproto.marshaler_all) = true;
 option (gogoproto.sizer_all) = true;
-option (gogoproto.unmarshaler_all) = true;
 
 message A {
 	option (gogoproto.face) = true;
 	option (gogoproto.goproto_getters) = false;
 	optional string Description = 1 [(gogoproto.nullable) = false];
 	optional int64 Number = 2 [(gogoproto.nullable) = false];
-	optional bytes Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Uuid", (gogoproto.nullable) = false];
+	optional int64 Id = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id", (gogoproto.nullable) = false];
 }
 
 message B {
 	option (gogoproto.description) = true;
 	optional A A = 1 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
-	repeated bytes G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test/custom.Uint128", (gogoproto.nullable) = false];
+	repeated int64 G = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id", (gogoproto.nullable) = false];
 }
 
 message C {

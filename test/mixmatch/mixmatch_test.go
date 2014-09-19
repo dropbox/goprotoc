@@ -56,11 +56,11 @@ func (this MixMatch) Regenerate() {
 	if err := ioutil.WriteFile("./testdata/thetest.proto", []byte(content), 0666); err != nil {
 		panic(err)
 	}
-	data2, err := ioutil.ReadFile("../uuid.go")
+	data2, err := ioutil.ReadFile("../custom_types.go")
 	if err != nil {
 		panic(err)
 	}
-	if err := ioutil.WriteFile("./testdata/uuid.go", data2, 0666); err != nil {
+	if err := ioutil.WriteFile("./testdata/custom_types.go", data2, 0666); err != nil {
 		panic(err)
 	}
 	time.Sleep(10 * time.Millisecond)
