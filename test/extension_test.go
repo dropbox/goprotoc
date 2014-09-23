@@ -83,7 +83,7 @@ func init() {
 	fieldABytes = append(fieldABytes, uint8(fieldABits>>56))
 }
 
-//TODO(andrei): extension get without using reflect 
+//TODO(andrei): extension get without using reflect
 func testExtensionsMyExtendable(t *testing.T) {
 	m := NewPopulatedMyExtendable(extr, false)
 	err := proto.SetExtension(m, E_FieldA, &fieldA)

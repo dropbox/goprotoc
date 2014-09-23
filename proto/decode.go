@@ -37,7 +37,7 @@ package proto
 
 import (
 	"fmt"
-	"godropbox/errors"
+	"github.com/dropbox/godropbox/errors"
 	"io"
 	"os"
 	"reflect"

@@ -21,7 +21,7 @@ import proto "github.com/dropbox/goprotoc/proto"
 import fmt "fmt"
 import io "io"
 import math "math"
-import errors "godropbox/errors"
+import errors "github.com/dropbox/godropbox/errors"
 
 // discarding unused import gogoproto "github.com/dropbox/goprotoc/gogoproto/gogo.pb"
 

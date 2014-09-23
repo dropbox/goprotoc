@@ -30,8 +30,8 @@ package io
 
 import (
 	"encoding/binary"
+	"github.com/dropbox/godropbox/errors"
 	"github.com/dropbox/goprotoc/proto"
-	"godropbox/errors"
 	"io"
 )
 
