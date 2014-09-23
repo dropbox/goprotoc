@@ -33,7 +33,7 @@ package proto_test
 
 import (
 	"bytes"
-	"godropbox/errors"
+	"github.com/dropbox/godropbox/errors"
 	"io/ioutil"
 	"math"
 	"strings"

@@ -35,7 +35,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"godropbox/errors"
+	"github.com/dropbox/godropbox/errors"
 	"math"
 	"math/rand"
 	"reflect"

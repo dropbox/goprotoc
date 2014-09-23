@@ -36,7 +36,7 @@ package proto
  */
 
 import (
-	"godropbox/errors"
+	"github.com/dropbox/godropbox/errors"
 	"reflect"
 	"strconv"
 	"sync"

@@ -142,7 +142,7 @@ the unmarshal will generate the following code:
 			}
 		}
 		return nil
-	}    
+	}
 
 Remember when using this code to call proto.Unmarshal.
 This will call m.Reset and invoke the generated Unmarshal method for you.

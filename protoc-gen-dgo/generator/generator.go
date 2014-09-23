@@ -1140,7 +1140,7 @@ func (g *Generator) generateImports() {
 	g.P("import " + g.Pkg["fmt"] + ` "fmt"`)
 	g.P("import " + g.Pkg["io"] + ` "io"`)
 	g.P("import " + g.Pkg["math"] + ` "math"`)
-	g.P("import " + g.Pkg["errors"] + ` "godropbox/errors"`)
+	g.P("import " + g.Pkg["errors"] + ` "github.com/dropbox/godropbox/errors"`)
 	g.P("import " + g.Pkg["reflect"] + ` "reflect"`)
 	for i, s := range g.file.Dependency {
 		fd := g.fileByName(s)
