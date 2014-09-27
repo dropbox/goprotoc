@@ -2,7 +2,7 @@
 #
 # Copyright 2010 The Go Authors.  All rights reserved.
 # http://code.google.com/p/goprotobuf/
-#
+
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
@@ -29,20 +29,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-.PHONY: nuke regenerate tests clean install install-gen gofmt
+.PHONY: nuke regenerate tests clean config install install-gen gofmt
 
 install:
 	go install ./proto
 	go install ./gogoproto
 	go install ./protoc-gen-dgo
-	go install ./fieldpath/fieldpath-gen
-	go install ./fieldpath
-	go install ./pbpath
 
 install-gen:
 	go install ./protoc-gen-dgo
 
-all: clean install regenerate gofmt install tests
+all: clean install config regenerate gofmt tests
+
+config: 
+	bash test_init.sh
 
 clean:
 	go clean ./...
@@ -57,7 +57,6 @@ regenerate:
 	make -C protoc-gen-dgo/descriptor regenerate
 	make -C protoc-gen-dgo/plugin regenerate
 	make -C gogoproto regenerate
-	make -C fieldpath/fieldpath-gen regenerate
 	make -C proto/testdata regenerate
 	make -C test regenerate
 	make -C test/example regenerate
@@ -76,7 +75,6 @@ regenerate:
 tests:
 	go test -v ./test
 	go test -v ./proto
-	go test -v ./fieldpath
 	go test -v ./io
 	go test -v ./test/custom
 	go test -v ./test/embedconflict
