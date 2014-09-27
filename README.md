@@ -44,6 +44,12 @@ The proto package converts data structures to and from the
 wire format of protocol buffers.  It works in concert with the
 Go source code generated for .proto files by the protocol compiler.
 
+### Unit tests
+
+	# The majority of the library code is covered by unittests. You need to configure test settings first:
+	make config && go test ./...
+	
+
 ### A summary of the properties of the goprotc protocol buffer interface:
 
 TODO
