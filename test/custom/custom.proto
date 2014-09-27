@@ -1,0 +1,22 @@
+package test;
+
+import "github.com/dropbox/goprotoc/gogoproto/gogo.proto";
+
+option (gogoproto.populate_all) = true;
+option (gogoproto.equal_all) = true;
+option (gogoproto.verbose_equal_all) = true;
+option (gogoproto.stringer_all) = true;
+
+message MessageCustom {
+	optional int64 field1 = 1 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
+	optional double field2 = 2 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Weight"];
+	optional bool field3 = 3 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Truth"];
+	optional string field4 = 4 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Sbring"];
+	optional bytes field5 = 5 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Obj"];
+
+	repeated int64 field11 = 11 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Id"];
+	repeated double field12 = 12 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Weight"];
+	repeated bool field13 = 13 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Truth"];
+	repeated string field14 = 14 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Sbring"];
+	repeated bytes field15 = 15 [(gogoproto.customtype) = "github.com/dropbox/goprotoc/test.Obj"];
+}

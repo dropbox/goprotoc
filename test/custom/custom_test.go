@@ -27,15 +27,143 @@
 package custom
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"strings"
 	"testing"
+	"time"
+
+	"github.com/dropbox/goprotoc/test_config"
 )
 
-func TestUint128(t *testing.T) {
-	var uint128a = Uint128{0, 1}
-	buf := make([]byte, 16)
-	PutLittleEndianUint128(buf, 0, uint128a)
-	uint128b := GetLittleEndianUint128(buf, 0)
-	if !uint128a.Equal(uint128b) {
-		t.Fatalf("%v != %v", uint128a, uint128b)
+type MixMatch struct {
+	Old []string
+	New []string
+}
+
+func (this MixMatch) Regenerate() {
+	data, err := ioutil.ReadFile("custom.proto")
+	if err != nil {
+		panic(err)
 	}
+	content := string(data)
+	for i, old := range this.Old {
+		content = strings.Replace(content, old, this.New[i], -1)
+	}
+	if err := ioutil.WriteFile("./testdata/custom.proto", []byte(content), 0666); err != nil {
+		panic(err)
+	}
+	data2, err := ioutil.ReadFile("../custom_types.go")
+	if err != nil {
+		panic(err)
+	}
+	if err := ioutil.WriteFile("./testdata/custom_types.go", data2, 0666); err != nil {
+		panic(err)
+	}
+	data3, err := ioutil.ReadFile("custom.test.golden")
+	if err != nil {
+		panic(err)
+	}
+	if err := ioutil.WriteFile("./testdata/custom_test.go", data3, 0666); err != nil {
+		panic(err)
+	}
+	time.Sleep(10 * time.Millisecond)
+	var regenerate = exec.Command("protoc", "--dgo_out=.", "-I="+config.ProtoPath, "./testdata/custom.proto")
+	fmt.Printf("regenerating\n")
+	out, err := regenerate.CombinedOutput()
+	fmt.Printf("regenerate output: %v\n", string(out))
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (this MixMatch) test(t *testing.T, shouldPass bool) {
+	if _, err := exec.LookPath("protoc"); err != nil {
+		t.Skipf("cannot find protoc in PATH")
+	}
+	if _, err := exec.LookPath("go"); err != nil {
+		t.Skipf("cannot find go in PATH")
+	}
+	if err := os.MkdirAll("./testdata", 0777); err != nil {
+		panic(err)
+	}
+	this.Regenerate()
+	var test = exec.Command("go", "test", "-v", "./testdata/")
+	fmt.Printf("testing\n")
+	out, err := test.CombinedOutput()
+	fmt.Printf("test output: %v\n", string(out))
+	if !shouldPass && err == nil {
+		panic("Expected test failure. Invalid custom type declaration.")
+	} else if shouldPass && err != nil {
+		panic(err)
+	}
+	if err := os.RemoveAll("./testdata"); err != nil {
+		panic(err)
+	}
+}
+
+func TestDefault(t *testing.T) {
+	MixMatch{}.test(t, true)
+}
+
+func TestCustomBytes(t *testing.T) {
+	MixMatch{
+		Old: []string{
+			"optional bytes field5 = 5",
+		},
+		New: []string{
+			"optional string field5 = 5",
+		},
+	}.test(t, false)
+
+	MixMatch{
+		Old: []string{
+			"repeated bytes field15 = 15",
+		},
+		New: []string{
+			"repeated string field15 = 15",
+		},
+	}.test(t, false)
+}
+
+func TestCustomTruncate(t *testing.T) {
+	MixMatch{
+		Old: []string{
+			"optional int64 field1 = 1",
+		},
+		New: []string{
+			"optional int32 field1 = 1",
+		},
+	}.test(t, false)
+
+	MixMatch{
+		Old: []string{
+			"repeated int64 field11 = 11",
+		},
+		New: []string{
+			"repeated uint64 field11 = 11",
+		},
+	}.test(t, false)
+
+	MixMatch{
+		Old: []string{
+			"optional double field2 = 2",
+		},
+		New: []string{
+			"optional float field2 = 2",
+		},
+	}.test(t, false)
+}
+
+func TestInvalidType(t *testing.T) {
+	MixMatch{
+		Old: []string{
+			"optional bool field3 = 3 ",
+		},
+		New: []string{
+			"optional int32 field3 = 3 ",
+		},
+	}.test(t, false)
 }
