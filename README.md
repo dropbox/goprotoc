@@ -27,6 +27,7 @@ Goprotoc welcomes any kind of contribution; please send any pull request for fea
 
 	# Grab the code from this repository and install the proto package.
 	go get -u github.com/dropbox/goprotoc
+	run "make install" from goprotoc directory
 
 ### Running goprotoc
 
@@ -52,4 +53,11 @@ Go source code generated for .proto files by the protocol compiler.
 
 ### A summary of the properties of the goprotc protocol buffer interface:
 
-TODO
+- Names are turned from camel_case to CamelCase for export.
+- There are getters that return a field's value if set, and return the field's default value if unset.
+- There are setters that can change the value of a field. For message fields they return a mutable pointer.
+- There are adders that can add a element to a repeated field. The slice grows exponentially to optimize memory allocation.
+- There are clear methods for each individual field or for a message as a whole that clear each field recursively.
+- All the fields are private so the only way to get/set them is by using the api functions.
+- Custom fields are supported for user defined types and string to bytes casting.
+- Marshal and Unmarshal are functions to encode and decode the wire format.
