@@ -355,14 +355,14 @@ func (g *Generator) field(field *descriptor.FieldDescriptorProto, fieldname stri
 				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, make([]byte, postIndex-index))`)
 				g.P(`copy(m.`, fieldname, `[len(m.`, fieldname, `)-1], data[index:postIndex])`)
 			} else {
-				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, data[index:postIndex]...)`)
+				g.P(`m.`, fieldname, ` = append([]byte{}, data[index:postIndex]...)`)
 			}
 		} else {
 			if repeated {
 				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, make(([]byte), postIndex-index))`)
 				g.P(`copy(m.`, fieldname, `[len(m.`, fieldname, `)-1], data[index:postIndex])`)
 			} else {
-				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, data[index:postIndex]...)`)
+				g.P(`m.`, fieldname, ` = append([]byte{}, data[index:postIndex]...)`)
 			}
 		}
 		g.P(`index = postIndex`)
